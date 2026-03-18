@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🔢 数字乐园</title>
+  <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-blue: #4A90E2;
+      --color-orange: #F5A623;
+      --color-green: #7ED321;
+      --color-red: #D0021B;
+      --color-purple: #9013FE;
+      --color-bg: #F5F7FA;
+      --color-text: #2C3E50;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'ZCOOL KuaiLe', system-ui, sans-serif;
+      background: var(--color-bg);
+      min-height: 100vh;
+    }
+    .game-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .hidden { display: none !important; }
+    .visible { display: block !important; }
+
+    /* 首页样式 */
+    .home-page { text-align: center; padding: 40px 20px; }
+    .home-title {
+      font-size: 52px;
+      color: var(--color-blue);
+      margin-bottom: 10px;
+      text-shadow: 3px 3px 0 var(--color-orange);
+    }
+    .home-subtitle { font-size: 22px; color: #666; margin-bottom: 40px; }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+    .game-card {
+      background: white;
+      border-radius: 24px;
+      padding: 30px 20px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border: 4px solid transparent;
+    }
+    .game-card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+    .game-card.blue { border-color: var(--color-blue); }
+    .game-card.orange { border-color: var(--color-orange); }
+    .game-card.green { border-color: var(--color-green); }
+    .game-card.purple { border-color: var(--color-purple); }
+    .game-icon { font-size: 56px; margin-bottom: 12px; }
+    .game-title { font-size: 22px; margin-bottom: 6px; }
+    .game-desc { font-size: 14px; color: #888; }
+    .progress-panel {
+      background: linear-gradient(135deg, var(--color-purple), #6B2C91);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 20px;
+      color: white;
+    }
+    .progress-item { text-align: center; }
+    .progress-value { font-size: 36px; font-weight: bold; }
+    .progress-label { font-size: 14px; opacity: 0.9; }
+
+    /* 通用组件 */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: white;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .back-btn {
+      background: var(--color-blue);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 16px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .back-btn:hover { transform: scale(1.05); }
+    .game-title-header { font-size: 24px; color: var(--color-text); }
+    .stars-display { font-size: 24px; display: flex; align-items: center; gap: 8px; }
+    .game-instruction { font-size: 20px; color: #666; margin-bottom: 20px; text-align: center; }
+
+    /* 动画 */
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+    @keyframes star-burst {
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(2) rotate(180deg); opacity: 0; }
+    }
+    .star-particle {
+      position: fixed;
+      font-size: 30px;
+      animation: star-burst 0.8s ease-out forwards;
+      pointer-events: none;
+    }
+
+    /* 游戏1: 数数乐园 */
+    .count-container { text-align: center; padding: 20px; }
+    .count-display {
+      background: linear-gradient(135deg, var(--color-blue), #357ABD);
+      border-radius: 30px;
+      padding: 40px;
+      margin-bottom: 30px;
+      color: white;
+    }
+    .big-number {
+      font-size: 120px;
+      font-weight: bold;
+      text-shadow: 4px 4px 0 rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+    }
+    .count-hint { font-size: 24px; }
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 15px;
+      max-width: 500px;
+      margin: 0 auto 30px;
+    }
+    .count-item {
+      width: 70px;
+      height: 70px;
+      background: white;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .count-item:hover { transform: scale(1.1); }
+    .count-item.clicked {
+      background: var(--color-green);
+      transform: scale(0.9);
+      animation: bounce 0.3s ease;
+    }
+
+    /* 游戏2: 数字配对 */
+    .match-container { text-align: center; padding: 20px; }
+    .number-pool {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 40px;
+      padding: 20px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .number-card {
+      width: 80px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--color-orange), #E69100);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+      color: white;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 6px 16px rgba(245,166,35,0.3);
+    }
+    .quantity-targets {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .quantity-slot {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      border: 3px dashed #ddd;
+      min-height: 150px;
+    }
+    .quantity-display { font-size: 40px; margin-bottom: 15px; }
+    .quantity-drop-zone {
+      height: 60px;
+      border: 2px dashed #ccc;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: #999;
+    }
+    .quantity-drop-zone.has-number {
+      background: var(--color-green);
+      border-color: var(--color-green);
+      color: white;
+    }
+
+    /* 游戏3: 数字接龙 */
+    .sequence-container { text-align: center; padding: 20px; }
+    .sequence-display {
+      background: linear-gradient(135deg, var(--color-green), #5CB85C);
+      border-radius: 30px;
+      padding: 40px;
+      margin-bottom: 30px;
+      color: white;
+    }
+    .sequence-hint { font-size: 28px; margin-bottom: 20px; }
+    .sequence-progress {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .sequence-dot {
+      width: 50px;
+      height: 50px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .sequence-dot.active { background: white; color: var(--color-green); }
+    .sequence-dot.completed { background: var(--color-yellow); color: var(--color-text); }
+    .number-bubbles {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .number-bubble {
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .number-bubble:hover { transform: scale(1.1); }
+    .number-bubble.correct { background: var(--color-green); color: white; animation: bounce 0.5s ease; }
+    .number-bubble.wrong { background: var(--color-red); color: white; animation: shake 0.5s ease; }
+
+    /* 游戏4: 趣味加法 */
+    .add-container { text-align: center; padding: 20px; }
+    .add-scene {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 30px;
+      padding: 30px;
+      margin-bottom: 20px;
+      color: white;
+    }
+    .add-story {
+      font-size: 22px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 15px;
+    }
+    .add-groups {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .add-group {
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      padding: 20px;
+      min-width: 120px;
+    }
+    .add-group-label {
+      font-size: 16px;
+      margin-bottom: 10px;
+      opacity: 0.9;
+    }
+    .add-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      min-height: 50px;
+    }
+    .add-item {
+      font-size: 36px;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+    }
+    .add-item:hover { transform: scale(1.2); }
+    .add-item.counted { animation: bounce 0.3s ease; }
+    .add-operator-big {
+      font-size: 48px;
+      font-weight: bold;
+    }
+    .add-result-box {
+      background: rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 15px;
+    }
+    .add-result-label {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .add-counter {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .add-count-box {
+      background: rgba(255,255,255,0.3);
+      border-radius: 15px;
+      padding: 15px 25px;
+    }
+    .add-count-number {
+      font-size: 36px;
+      font-weight: bold;
+    }
+    .add-count-label {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    .add-hint {
+      font-size: 16px;
+      margin-top: 15px;
+      padding: 10px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+    }
+    .answer-options-visual {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .answer-card {
+      background: white;
+      border: 4px solid #eee;
+      border-radius: 20px;
+      padding: 20px 30px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    }
+    .answer-card:hover {
+      border-color: var(--color-purple);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    .answer-card-number {
+      font-size: 48px;
+      font-weight: bold;
+      color: var(--color-purple);
+    }
+    .answer-card-items {
+      font-size: 24px;
+      margin-top: 10px;
+    }
+    .answer-card.correct {
+      border-color: var(--color-green);
+      background: var(--color-green);
+      animation: bounce 0.5s ease;
+    }
+    .answer-card.correct .answer-card-number,
+    .answer-card.correct .answer-card-items { color: white; }
+    .answer-card.wrong {
+      border-color: var(--color-red);
+      background: var(--color-red);
+      animation: shake 0.5s ease;
+    }
+    .answer-card.wrong .answer-card-number,
+    .answer-card.wrong .answer-card-items { color: white; }
+
+    /* 完成页面 */
+    .complete-container { text-align: center; padding: 60px 20px; }
+    .complete-emoji { font-size: 100px; margin-bottom: 20px; }
+    .complete-title { font-size: 36px; margin-bottom: 20px; }
+    .complete-desc { font-size: 24px; color: #666; margin-bottom: 40px; }
+
+    /* 触摸优化 */
+    .touch-feedback {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+    .touch-feedback:active {
+      transform: scale(0.95);
+    }
+    
+    /* 游戏卡片触摸优化 */
+    .game-card {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .game-card:active {
+      transform: scale(0.97);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* 按钮触摸优化 */
+    .back-btn, .answer-btn, .word-option, .letter-btn, .answer-card {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .back-btn:active, .answer-btn:active, .word-option:active, .letter-btn:active, .answer-card:active {
+      transform: scale(0.95);
+      opacity: 0.9;
+    }
+    
+    /* 可点击元素触摸优化 */
+    .count-item, .number-bubble, .letter-card, .number-card, .add-item {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .count-item:active, .number-bubble:active, .letter-card:active, .number-card:active, .add-item:active {
+      transform: scale(0.9);
+    }
+    
+    /* 触摸拖拽优化 */
+    .letter-card, .number-card {
+      touch-action: none;
+      -webkit-touch-callout: none;
+    }
+    
+    /* 防止页面滚动干扰 */
+    .game-container {
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+    }
+    
+    /* 游戏页面防止滚动 */
+    .game-page {
+      touch-action: none;
+      overscroll-behavior: none;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .home-title { font-size: 36px; }
+      .home-subtitle { font-size: 18px; }
+      .game-grid { 
+        grid-template-columns: 1fr; 
+        gap: 16px;
+      }
+      .game-card { 
+        padding: 30px 20px; 
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .game-icon { font-size: 48px; margin-bottom: 8px; }
+      .game-title { font-size: 20px; }
+      .game-desc { font-size: 13px; }
+      
+      .big-number { font-size: 72px; }
+      .items-grid { 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 12px;
+      }
+      .count-item { 
+        width: 70px; 
+        height: 70px; 
+        font-size: 32px;
+      }
+      
+      .number-bubble { 
+        width: 70px; 
+        height: 70px; 
+        font-size: 32px;
+      }
+      
+      .quantity-targets { grid-template-columns: repeat(2, 1fr); }
+      
+      .answer-card {
+        padding: 15px 20px;
+        min-width: 100px;
+      }
+      .answer-card-number { font-size: 36px; }
+      .answer-card-items { font-size: 18px; }
+      
+      .add-item { font-size: 32px; }
+      .add-group { padding: 15px; min-width: 100px; }
+      
+      .letter-btn {
+        height: 60px;
+        font-size: 24px;
+      }
+      
+      .word-option {
+        padding: 16px;
+        font-size: 20px;
+      }
+      
+      .top-bar {
+        padding: 12px 16px;
+      }
+      .back-btn {
+        padding: 10px 18px;
+        font-size: 14px;
+      }
+      .game-title-header { font-size: 20px; }
+      
+      .progress-panel {
+        padding: 20px 16px;
+      }
+      .progress-value { font-size: 28px; }
+      .progress-label { font-size: 12px; }
+    }
+    
+    /* 小屏幕手机优化 */
+    @media (max-width: 375px) {
+      .home-title { font-size: 32px; }
+      .game-card { padding: 25px 15px; min-height: 120px; }
+      .game-icon { font-size: 40px; }
+      .count-item { width: 60px; height: 60px; font-size: 28px; }
+      .number-bubble { width: 60px; height: 60px; font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <!-- 首页 -->
+    <div id="home-page" class="home-page visible">
+      <h1 class="home-title">🔢 数字乐园</h1>
+      <p class="home-subtitle">和数字做朋友，一起快乐学习！</p>
+      <div class="game-grid">
+        <div class="game-card blue touch-feedback" ontouchstart="" onclick="startGame('count')">
+          <div class="game-icon">🔢</div>
+          <div class="game-title">数数乐园</div>
+          <div class="game-desc">点击物品学数字</div>
+        </div>
+        <div class="game-card orange touch-feedback" ontouchstart="" onclick="startGame('match')">
+          <div class="game-icon">🎯</div>
+          <div class="game-title">数字配对</div>
+          <div class="game-desc">数字和数量配对</div>
+        </div>
+        <div class="game-card green touch-feedback" ontouchstart="" onclick="startGame('sequence')">
+          <div class="game-icon">🔗</div>
+          <div class="game-title">数字接龙</div>
+          <div class="game-desc">按顺序点数字</div>
+        </div>
+        <div class="game-card purple touch-feedback" ontouchstart="" onclick="startGame('add')">
+          <div class="game-icon">➕</div>
+          <div class="game-title">趣味加法</div>
+          <div class="game-desc">互动式学加法</div>
+        </div>
+      </div>
+      <div class="progress-panel">
+        <div class="progress-item">
+          <div class="progress-value">⭐ <span id="stars-count">0</span></div>
+          <div class="progress-label">星星总数</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-value">🎯 <span id="completed-count">0</span></div>
+          <div class="progress-label">通关次数</div>
+        </div>
+        <div class="progress-item">
+          <div class="progress-value">🔢 <span id="numbers-count">0</span></div>
+          <div class="progress-label">掌握数字</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 游戏页面 -->
+    <div id="game-page" class="game-page hidden">
+      <div id="game-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // 进度管理
+    const ProgressManager = {
+      STORAGE_KEY: 'math-game-progress',
+      load() {
+        try {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          return data ? JSON.parse(data) : this.getDefaultProgress();
+        } catch (e) { return this.getDefaultProgress(); }
+      },
+      getDefaultProgress() {
+        return { stars: 0, completedGames: 0, masteredNumbers: [], gameHistory: {} };
+      },
+      save(progress) {
+        try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(progress)); } catch (e) {}
+      },
+      addStars(count) {
+        const progress = this.load();
+        progress.stars += count;
+        this.save(progress);
+        this.updateDisplay();
+      },
+      updateDisplay() {
+        const progress = this.load();
+        document.getElementById('stars-count').textContent = progress.stars;
+        document.getElementById('completed-count').textContent = progress.completedGames;
+        document.getElementById('numbers-count').textContent = progress.masteredNumbers.length;
+      }
+    };
+
+    // 页面导航
+    function showPage(pageId) {
+      document.querySelectorAll('.home-page, .game-page').forEach(p => {
+        p.classList.add('hidden');
+        p.classList.remove('visible');
+      });
+      document.getElementById(pageId).classList.remove('hidden');
+      document.getElementById(pageId).classList.add('visible');
+    }
+
+    function startGame(gameType) {
+      showPage('game-page');
+      switch(gameType) {
+        case 'count': initCountGame(); break;
+        case 'match': initMatchGame(); break;
+        case 'sequence': initSequenceGame(); break;
+        case 'add': initAddGame(); break;
+      }
+    }
+
+    function showHome() {
+      showPage('home-page');
+      ProgressManager.updateDisplay();
+    }
+
+    function showStarAnimation(x, y) {
+      const particle = document.createElement('div');
+      particle.className = 'star-particle';
+      particle.textContent = '⭐';
+      particle.style.left = x + 'px';
+      particle.style.top = y + 'px';
+      document.body.appendChild(particle);
+      setTimeout(() => particle.remove(), 800);
+    }
+
+    function speakNumber(num) {
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(String(num));
+        utterance.lang = 'zh-CN';
+        utterance.rate = 0.8;
+        speechSynthesis.speak(utterance);
+      }
+    }
+
+    // 触摸事件工具函数
+    function addTouchFeedback(element) {
+      if (!element) return;
+      element.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        element.style.transform = 'scale(0.95)';
+        element.style.opacity = '0.9';
+      }, { passive: false });
+      element.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        element.style.transform = '';
+        element.style.opacity = '';
+      });
+    }
+
+    // 获取触摸/点击坐标
+    function getEventPos(e) {
+      if (e.touches && e.touches.length > 0) {
+        return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }
+      if (e.changedTouches && e.changedTouches.length > 0) {
+        return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      }
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    // 游戏1: 数数乐园
+    let countState = { targetNumber: 1, clickedCount: 0 };
+    function initCountGame() {
+      countState = { targetNumber: Math.floor(Math.random() * 10) + 1, clickedCount: 0 };
+      renderCountGame();
+    }
+    function renderCountGame() {
+      const items = Array(countState.targetNumber).fill('🍎');
+      let html = `
+        <div class="top-bar">
+          <button class="back-btn" onclick="showHome()">← 返回</button>
+          <div class="game-title-header">🔢 数数乐园</div>
+          <div class="stars-display">⭐ <span id="game-stars">0</span></div>
+        </div>
+        <div class="count-container">
+          <div class="count-display">
+            <div class="big-number" id="current-number">0</div>
+            <div class="count-hint">👆 点击苹果数一数！</div>
+          </div>
+          <div class="items-grid">
+            ${items.map((item, idx) => `
+              <div class="count-item touch-feedback" ontouchstart="handleCountTouch(event, ${idx})" onclick="clickItem(${idx})" data-index="${idx}">${item}</div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById('game-content').innerHTML = html;
+    }
+    
+    function handleCountTouch(e, index) {
+      e.preventDefault();
+      const item = document.querySelector(`.count-item[data-index="${index}"]`);
+      if (!item || item.classList.contains('clicked')) return;
+      clickItem(index);
+    }
+    function clickItem(index) {
+      const item = document.querySelector(`.count-item[data-index="${index}"]`);
+      if (item.classList.contains('clicked')) return;
+      item.classList.add('clicked');
+      countState.clickedCount++;
+      document.getElementById('current-number').textContent = countState.clickedCount;
+      speakNumber(countState.clickedCount);
+      if (countState.clickedCount === countState.targetNumber) {
+        ProgressManager.addStars(1);
+        showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
+        setTimeout(() => {
+          countState.targetNumber = Math.floor(Math.random() * 10) + 1;
+          countState.clickedCount = 0;
+          renderCountGame();
+        }, 1500);
+      }
+    }
+
+    // 游戏2: 数字配对
+    let matchState = { score: 0, currentNumbers: [], targetQuantities: [] };
+    function initMatchGame() {
+      matchState = { score: 0, currentNumbers: [], targetQuantities: [] };
+      const numbers = [1, 2, 3, 4, 5, 6];
+      matchState.currentNumbers = [...numbers].sort(() => Math.random() - 0.5);
+      matchState.targetQuantities = [...numbers].sort(() => Math.random() - 0.5);
+      renderMatchGame();
+    }
+    function renderMatchGame() {
+      let html = `
+        <div class="top-bar">
+          <button class="back-btn" onclick="showHome()">← 返回</button>
+          <div class="game-title-header">🎯 数字配对</div>
+          <div class="stars-display">⭐ <span id="game-stars">0</span></div>
+        </div>
+        <div class="match-container">
+          <p class="game-instruction">把数字拖到对应数量的方框里！</p>
+          <div class="number-pool">
+            ${matchState.currentNumbers.map(num => `
+              <div class="number-card" draggable="true" data-number="${num}">${num}</div>
+            `).join('')}
+          </div>
+          <div class="quantity-targets">
+            ${matchState.targetQuantities.map(qty => `
+              <div class="quantity-slot" data-target="${qty}">
+                <div class="quantity-display">${'🍎'.repeat(qty)}</div>
+                <div class="quantity-drop-zone" data-target="${qty}"></div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById('game-content').innerHTML = html;
+      setupMatchDrag();
+    }
+    function setupMatchDrag() {
+      let dragData = null;
+      let touchDragElement = null;
+      let touchStartPos = null;
+      
+      // 鼠标拖拽
+      document.querySelectorAll('.number-card').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          dragData = { number: card.dataset.number };
+          card.style.opacity = '0.5';
+        });
+        card.addEventListener('dragend', () => {
+          card.style.opacity = '1';
+          dragData = null;
+        });
+        
+        // 触摸拖拽支持
+        card.addEventListener('touchstart', (e) => {
+          if (card.style.visibility === 'hidden') return;
+          touchStartPos = getEventPos(e);
+          touchDragElement = card;
+          card.style.opacity = '0.7';
+          card.style.zIndex = '1000';
+          card.style.position = 'relative';
+        }, { passive: true });
+        
+        card.addEventListener('touchmove', (e) => {
+          if (!touchDragElement) return;
+          e.preventDefault();
+          const pos = getEventPos(e);
+          const deltaX = pos.x - touchStartPos.x;
+          const deltaY = pos.y - touchStartPos.y;
+          touchDragElement.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        }, { passive: false });
+        
+        card.addEventListener('touchend', (e) => {
+          if (!touchDragElement) return;
+          const pos = getEventPos(e);
+          touchDragElement.style.opacity = '1';
+          touchDragElement.style.transform = '';
+          touchDragElement.style.zIndex = '';
+          touchDragElement.style.position = '';
+          
+          // 检查是否落在目标区域
+          const number = parseInt(touchDragElement.dataset.number);
+          document.querySelectorAll('.quantity-drop-zone').forEach(zone => {
+            if (zone.classList.contains('has-number')) return;
+            const rect = zone.getBoundingClientRect();
+            if (pos.x >= rect.left && pos.x <= rect.right && 
+                pos.y >= rect.top && pos.y <= rect.bottom) {
+              const target = parseInt(zone.dataset.target);
+              if (number === target) {
+                zone.textContent = number;
+                zone.classList.add('has-number');
+                touchDragElement.style.visibility = 'hidden';
+                matchState.score++;
+                document.getElementById('game-stars').textContent = matchState.score;
+                ProgressManager.addStars(1);
+                showStarAnimation(pos.x, pos.y);
+                if (matchState.score === 6) setTimeout(() => showMatchComplete(), 500);
+              } else {
+                zone.style.animation = 'shake 0.5s ease';
+                setTimeout(() => zone.style.animation = '', 500);
+              }
+            }
+          });
+          
+          touchDragElement = null;
+          touchStartPos = null;
+        });
+      });
+      
+      document.querySelectorAll('.quantity-drop-zone').forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (!zone.classList.contains('has-number')) zone.style.borderColor = 'var(--color-green)';
+        });
+        zone.addEventListener('dragleave', () => {
+          if (!zone.classList.contains('has-number')) zone.style.borderColor = '#ccc';
+        });
+        zone.addEventListener('drop', (e) => {
+          e.preventDefault();
+          if (!dragData || zone.classList.contains('has-number')) return;
+          const target = parseInt(zone.dataset.target);
+          const dragged = parseInt(dragData.number);
+          if (dragged === target) {
+            zone.textContent = dragged;
+            zone.classList.add('has-number');
+            const card = document.querySelector(`.number-card[data-number="${dragged}"]`);
+            if (card) card.style.visibility = 'hidden';
+            matchState.score++;
+            document.getElementById('game-stars').textContent = matchState.score;
+            ProgressManager.addStars(1);
+            showStarAnimation(e.clientX, e.clientY);
+            if (matchState.score === 6) setTimeout(() => showMatchComplete(), 500);
+          } else {
+            zone.style.animation = 'shake 0.5s ease';
+            setTimeout(() => zone.style.animation = '', 500);
+          }
+        });
+      });
+    }
+
+    // 游戏3: 数字接龙
+    let sequenceState = { currentNumber: 1, completed: [] };
+    function initSequenceGame() {
+      sequenceState = { currentNumber: 1, completed: [] };
+      renderSequenceGame();
+    }
+    function renderSequenceGame() {
+      const numbers = Array.from({length: 10}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+      let html = `
+        <div class="top-bar">
+          <button class="back-btn" onclick="showHome()">← 返回</button>
+          <div class="game-title-header">🔗 数字接龙</div>
+          <div class="stars-display">⭐ <span id="game-stars">0</span></div>
+        </div>
+        <div class="sequence-container">
+          <div class="sequence-display">
+            <div class="sequence-hint">按顺序点击数字：1 → 2 → 3...</div>
+            <div class="sequence-progress">
+              ${Array.from({length: 10}, (_, i) => `
+                <div class="sequence-dot ${i < sequenceState.currentNumber - 1 ? 'completed' : ''} ${i === sequenceState.currentNumber - 1 ? 'active' : ''}">
+                  ${i < sequenceState.currentNumber - 1 ? '✓' : i + 1}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="number-bubbles">
+            ${numbers.map(num => `
+              <div class="number-bubble touch-feedback" ontouchstart="handleBubbleTouch(event, ${num})" onclick="clickBubble(${num})" data-number="${num}">${num}</div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      document.getElementById('game-content').innerHTML = html;
+    }
+    function handleBubbleTouch(e, num) {
+      e.preventDefault();
+      const bubble = document.querySelector(`.number-bubble[data-number="${num}"]`);
+      if (!bubble || bubble.classList.contains('correct')) return;
+      clickBubble(num);
+    }
+    
+    function clickBubble(num) {
+      const bubble = document.querySelector(`.number-bubble[data-number="${num}"]`);
+      if (bubble.classList.contains('correct')) return;
+      if (num === sequenceState.currentNumber) {
+        bubble.classList.add('correct');
+        sequenceState.completed.push(num);
+        sequenceState.currentNumber++;
+        speakNumber(num);
+        ProgressManager.addStars(1);
+        showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
+        if (sequenceState.currentNumber > 10) setTimeout(() => showSequenceComplete(), 1000);
+        else setTimeout(() => renderSequenceGame(), 500);
+      } else {
+        bubble.classList.add('wrong');
+        setTimeout(() => bubble.classList.remove('wrong'), 500);
+      }
+    }
+
+    // 游戏4: 趣味加法
+    const ADD_THEMES = {
+      animals: {
+        name: '小动物',
+        items: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵'],
+        stories: ['小狗在草地上玩耍', '小猫咪在晒太阳', '小兔子在吃胡萝卜', '小熊在找蜂蜜', '小猴子在爬树']
+      },
+      fruits: {
+        name: '水果',
+        items: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🍍', '🥝', '🥑'],
+        stories: ['果园里的苹果熟了', '水果摊上有好多水果', '小熊在挑选水果', '小兔子最爱吃水果', '水果派对开始啦']
+      },
+      vehicles: {
+        name: '交通工具',
+        items: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🛵', '🚲'],
+        stories: ['马路上车来车往', '停车场停满了车', '玩具车大集合', '汽车比赛开始了', '交通工具展览会']
+      },
+      food: {
+        name: '美食',
+        items: ['🍔', '🍕', '🌭', '🥪', '🌮', '🌯', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🥗', '🍿', '🧈'],
+        stories: ['餐厅里有很多美食', '野餐篮里装满了食物', '美食节开始了', '大厨做了很多好吃的', '美食大拼盘']
+      },
+      toys: {
+        name: '玩具',
+        items: ['🧸', '🎈', '🎎', '🎏', '🎐', '🪁', '🎨', '🎭', '🎪', '🎯', '🎲', '🎰', '🎳', '🏓', '⚽'],
+        stories: ['玩具箱里有好多玩具', '玩具店开张了', '小朋友在分享玩具', '玩具派对开始了', '玩具大集合']
+      }
+    };
+
+    let addState = { 
+      num1: 0, num2: 0, answer: 0, options: [], score: 0, round: 0,
+      currentTheme: null, itemIcon: '', counted1: 0, counted2: 0, totalCounted: 0
+    };
+
+    function initAddGame() {
+      addState = { 
+        num1: 0, num2: 0, answer: 0, options: [], score: 0, round: 0,
+        currentTheme: null, itemIcon: '', counted1: 0, counted2: 0, totalCounted: 0
+      };
+      renderAddGame();
+    }
+
+    function renderAddGame() {
+      // 随机选择主题
+      const themeKeys = Object.keys(ADD_THEMES);
+      const themeKey = themeKeys[Math.floor(Math.random() * themeKeys.length)];
+      addState.currentTheme = ADD_THEMES[themeKey];
+      
+      // 随机选择物品图标
+      addState.itemIcon = addState.currentTheme.items[Math.floor(Math.random() * addState.currentTheme.items.length)];
+      
+      // 生成数字（1-5 + 1-5，确保不超过10）
+      addState.num1 = Math.floor(Math.random() * 5) + 1;
+      addState.num2 = Math.floor(Math.random() * 5) + 1;
+      addState.answer = addState.num1 + addState.num2;
+      addState.counted1 = 0;
+      addState.counted2 = 0;
+      addState.totalCounted = 0;
+      
+      // 生成错误答案
+      const wrongAnswers = [];
+      while (wrongAnswers.length < 2) {
+        const wrong = Math.floor(Math.random() * 10) + 1;
+        if (wrong !== addState.answer && !wrongAnswers.includes(wrong)) wrongAnswers.push(wrong);
+      }
+      addState.options = [addState.answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+      
+      // 随机选择一个故事
+      const story = addState.currentTheme.stories[Math.floor(Math.random() * addState.currentTheme.stories.length)];
+      
+      let html = `
+        <div class="top-bar">
+          <button class="back-btn" onclick="showHome()">← 返回</button>
+          <div class="game-title-header">➕ 趣味加法</div>
+          <div class="stars-display">⭐ <span id="game-stars">${addState.score}</span></div>
+        </div>
+        <div class="add-container">
+          <div class="add-scene">
+            <div class="add-story">${story}</div>
+            <div class="add-groups">
+              <div class="add-group">
+                <div class="add-group-label">第一组</div>
+                <div class="add-items" id="group1">
+                  ${Array(addState.num1).fill(addState.itemIcon).map((item, idx) => `
+                    <span class="add-item touch-feedback" ontouchstart="handleAddItemTouch(event, 1, ${idx})" onclick="countItem(1, ${idx})" data-group="1" data-idx="${idx}">${item}</span>
+                  `).join('')}
+                </div>
+              </div>
+              <div class="add-operator-big">+</div>
+              <div class="add-group">
+                <div class="add-group-label">第二组</div>
+                <div class="add-items" id="group2">
+                  ${Array(addState.num2).fill(addState.itemIcon).map((item, idx) => `
+                    <span class="add-item touch-feedback" ontouchstart="handleAddItemTouch(event, 2, ${idx})" onclick="countItem(2, ${idx})" data-group="2" data-idx="${idx}">${item}</span>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+            <div class="add-result-box">
+              <div class="add-result-label">👆 点击上面的${addState.currentTheme.name}数一数</div>
+              <div class="add-counter">
+                <div class="add-count-box">
+                  <div class="add-count-number" id="count1">0</div>
+                  <div class="add-count-label">第一组</div>
+                </div>
+                <div class="add-count-box">
+                  <div class="add-count-number" id="count2">0</div>
+                  <div class="add-count-label">第二组</div>
+                </div>
+                <div class="add-count-box" style="background: rgba(255,255,255,0.5);">
+                  <div class="add-count-number" id="total-count">0</div>
+                  <div class="add-count-label">总共</div>
+                </div>
+              </div>
+            </div>
+            <div class="add-hint">💡 数完所有${addState.currentTheme.name}后，选择正确答案！</div>
+          </div>
+          <div class="answer-options-visual">
+            ${addState.options.map(opt => `
+              <div class="answer-card touch-feedback" ontouchstart="handleAnswerCardTouch(event, ${opt})" onclick="checkAddAnswer(${opt})" data-answer="${opt}">
+                <div class="answer-card-number">${opt}</div>
+                <div class="answer-card-items">${addState.itemIcon.repeat(opt)}</div>
+              </div>
+            `).join('')}
+          </div>
+          <p style="color: #888; font-size: 16px;">第 ${addState.round + 1} / 5 题</p>
+        </div>
+      `;
+      document.getElementById('game-content').innerHTML = html;
+    }
+
+    function handleAddItemTouch(e, group, idx) {
+      e.preventDefault();
+      const item = document.querySelector(`.add-item[data-group="${group}"][data-idx="${idx}"]`);
+      if (!item || item.classList.contains('counted')) return;
+      countItem(group, idx);
+    }
+    
+    function handleAnswerCardTouch(e, opt) {
+      e.preventDefault();
+      checkAddAnswer(opt);
+    }
+    
+    function countItem(group, idx) {
+      const item = document.querySelector(`.add-item[data-group="${group}"][data-idx="${idx}"]`);
+      if (item.classList.contains('counted')) return;
+      
+      item.classList.add('counted');
+      
+      if (group === 1) {
+        addState.counted1++;
+        document.getElementById('count1').textContent = addState.counted1;
+      } else {
+        addState.counted2++;
+        document.getElementById('count2').textContent = addState.counted2;
+      }
+      
+      addState.totalCounted++;
+      document.getElementById('total-count').textContent = addState.totalCounted;
+      
+      // 播放计数音效
+      speakNumber(addState.totalCounted);
+      
+      // 显示星星动画
+      const rect = item.getBoundingClientRect();
+      showStarAnimation(rect.left + rect.width / 2, rect.top);
+    }
+
+    function checkAddAnswer(selected) {
+      const cards = document.querySelectorAll('.answer-card');
+      cards.forEach(card => {
+        card.style.pointerEvents = 'none';
+        const answer = parseInt(card.dataset.answer);
+        if (answer === addState.answer) {
+          card.classList.add('correct');
+        } else if (answer === selected && selected !== addState.answer) {
+          card.classList.add('wrong');
+        }
+      });
+      
+      if (selected === addState.answer) {
+        addState.score++;
+        addState.round++;
+        document.getElementById('game-stars').textContent = addState.score;
+        ProgressManager.addStars(1);
+        
+        // 播放答案
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance(`${addState.num1}加${addState.num2}等于${addState.answer}`);
+          utterance.lang = 'zh-CN';
+          utterance.rate = 0.8;
+          speechSynthesis.speak(utterance);
+        }, 300);
+        
+        showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
+        
+        setTimeout(() => {
+          if (addState.round < 5) renderAddGame();
+          else showAddComplete();
+        }, 2000);
+      } else {
+        setTimeout(() => {
+          cards.forEach(card => {
+            card.classList.remove('wrong', 'correct');
+            card.style.pointerEvents = 'auto';
+          });
+        }, 1500);
+      }
+    }
+
+    // 完成页面
+    function showMatchComplete() {
+      const progress = ProgressManager.load();
+      progress.completedGames++;
+      ProgressManager.save(progress);
+      document.getElementById('game-content').innerHTML = `
+        <div class="complete-container">
+          <div class="complete-emoji">🎯</div>
+          <h2 class="complete-title" style="color: var(--color-orange);">配对大师！</h2>
+          <p class="complete-desc">你完成了所有数字配对！</p>
+          <button class="back-btn" onclick="showHome()">返回首页</button>
+        </div>
+      `;
+    }
+    function showSequenceComplete() {
+      const progress = ProgressManager.load();
+      progress.completedGames++;
+      ProgressManager.save(progress);
+      document.getElementById('game-content').innerHTML = `
+        <div class="complete-container">
+          <div class="complete-emoji">🔗</div>
+          <h2 class="complete-title" style="color: var(--color-green);">接龙高手！</h2>
+          <p class="complete-desc">你按顺序数完了1到10！</p>
+          <button class="back-btn" onclick="showHome()">返回首页</button>
+        </div>
+      `;
+    }
+    function showAddComplete() {
+      const progress = ProgressManager.load();
+      progress.completedGames++;
+      ProgressManager.save(progress);
+      document.getElementById('game-content').innerHTML = `
+        <div class="complete-container">
+          <div class="complete-emoji">➕</div>
+          <h2 class="complete-title" style="color: var(--color-purple);">加法小达人！</h2>
+          <p class="complete-desc">你答对了 ${addState.score} 道趣味加法题！</p>
+          <button class="back-btn" onclick="showHome()">返回首页</button>
+        </div>
+      `;
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      ProgressManager.updateDisplay();
+    });
+  </script>
+</body>
+</html>
