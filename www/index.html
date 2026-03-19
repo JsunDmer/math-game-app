@@ -1317,52 +1317,27 @@
       <h1 class="home-title">🔢 数字乐园</h1>
       <p class="home-subtitle">和数字做朋友，一起快乐学习！</p>
       
-      <!-- 难度选择 -->
-      <div class="difficulty-selector">
-        <div class="difficulty-label">选择难度：</div>
-        <div class="difficulty-buttons">
-          <button class="difficulty-btn active" data-level="easy" onclick="setDifficulty('easy')">
-            <span class="difficulty-icon">🌱</span>
-            <span class="difficulty-name">简单</span>
-            <span class="difficulty-range">1-5</span>
-          </button>
-          <button class="difficulty-btn" data-level="normal" onclick="setDifficulty('normal')">
-            <span class="difficulty-icon">🌿</span>
-            <span class="difficulty-name">普通</span>
-            <span class="difficulty-range">1-10</span>
-          </button>
-          <button class="difficulty-btn" data-level="hard" onclick="setDifficulty('hard')">
-            <span class="difficulty-icon">🌳</span>
-            <span class="difficulty-name">困难</span>
-            <span class="difficulty-range">1-20</span>
-          </button>
-        </div>
-      </div>
-      
+
       <div class="game-grid">
         <div class="game-card blue touch-feedback" onclick="startGame('count')">
           <div class="game-icon">🔢</div>
           <div class="game-title">数数乐园</div>
           <div class="game-desc">点击物品学数字</div>
-          <div class="game-difficulty" id="count-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card orange touch-feedback" onclick="startGame('match')">
           <div class="game-icon">🎯</div>
           <div class="game-title">数字配对</div>
           <div class="game-desc">数字和数量配对</div>
-          <div class="game-difficulty" id="match-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card green touch-feedback" onclick="startGame('sequence')">
           <div class="game-icon">🔗</div>
           <div class="game-title">数字接龙</div>
           <div class="game-desc">按顺序点数字</div>
-          <div class="game-difficulty" id="sequence-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card purple touch-feedback" onclick="startGame('add')">
           <div class="game-icon">➕</div>
           <div class="game-title">趣味加法</div>
           <div class="game-desc">互动式学加法</div>
-          <div class="game-difficulty" id="add-difficulty">当前: 1-5</div>
         </div>
       </div>
       <!-- 音量控制面板 -->
@@ -1383,14 +1358,6 @@
               <input type="range" id="sfx-volume" class="audio-slider" min="0" max="100" value="50" oninput="SFXManager.setVolume(this.value / 100)">
             </div>
           </div>
-        </div>
-      </div>
-
-      <!-- 角色吉祥物 -->
-      <div class="mascot-container" id="mascot-container">
-        <div class="mascot" onclick="interactMascot()">
-          <div class="mascot-body">🐻</div>
-          <div class="mascot-speech" id="mascot-speech">你好！我是小熊数学助手！</div>
         </div>
       </div>
 
@@ -1462,67 +1429,9 @@
   </div>
 
   <script>
-    // 难度配置
-    const DIFFICULTY_CONFIG = {
-      easy: { maxNumber: 5, name: '简单', range: '1-5' },
-      normal: { maxNumber: 10, name: '普通', range: '1-10' },
-      hard: { maxNumber: 20, name: '困难', range: '1-20' }
-    };
-    
-    // 当前难度
-    let currentDifficulty = 'easy';
-    
-    // 设置难度
-    function setDifficulty(level) {
-      if (!DIFFICULTY_CONFIG[level]) return;
-      
-      currentDifficulty = level;
-      const config = DIFFICULTY_CONFIG[level];
-      
-      // 更新按钮状态 - 使用更可靠的方式
-      const buttons = document.querySelectorAll('.difficulty-btn');
-      buttons.forEach(btn => {
-        const btnLevel = btn.getAttribute('data-level');
-        if (btnLevel === level) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
-      });
-      
-      // 更新游戏卡片显示
-      const countDiff = document.getElementById('count-difficulty');
-      const matchDiff = document.getElementById('match-difficulty');
-      const sequenceDiff = document.getElementById('sequence-difficulty');
-      const addDiff = document.getElementById('add-difficulty');
-      
-      if (countDiff) countDiff.textContent = `当前: ${config.range}`;
-      if (matchDiff) matchDiff.textContent = `当前: ${config.range}`;
-      if (sequenceDiff) sequenceDiff.textContent = `当前: ${config.range}`;
-      if (addDiff) addDiff.textContent = `当前: ${config.range}`;
-      
-      // 保存到本地
-      try {
-        localStorage.setItem('math-game-difficulty', level);
-      } catch (e) {}
-      
-      // 播放音效
-      playBeep(600, 100);
-    }
-    
-    // 加载保存的难度
-    function loadDifficulty() {
-      try {
-        const saved = localStorage.getItem('math-game-difficulty');
-        if (saved && DIFFICULTY_CONFIG[saved]) {
-          setDifficulty(saved);
-        }
-      } catch (e) {}
-    }
-    
     // 获取当前最大数字
     function getMaxNumber() {
-      return DIFFICULTY_CONFIG[currentDifficulty].maxNumber;
+      return 10; // 固定最大数字为10
     }
 
     // 温和的错误提示消息
@@ -1879,50 +1788,6 @@
       }
     };
 
-    // 角色吉祥物系统
-    const MascotSystem = {
-      messages: [
-        '加油！你是最棒的！',
-        '数学真有趣！',
-        '继续挑战吧！',
-        '你进步好大！',
-        '星星在等着你！',
-        '相信自己！',
-        '数字是我们的朋友！',
-        '每一题都是进步！',
-        '坚持就是胜利！',
-        '你真聪明！'
-      ],
-      currentIndex: 0,
-
-      showMessage(message) {
-        const speech = document.getElementById('mascot-speech');
-        if (speech) {
-          speech.textContent = message || this.messages[Math.floor(Math.random() * this.messages.length)];
-          speech.classList.add('show');
-          setTimeout(() => speech.classList.remove('show'), 3000);
-        }
-      },
-
-      interact() {
-        this.showMessage();
-        // 播放可爱的音效
-        playBeep(600, 100);
-        setTimeout(() => playBeep(800, 100), 100);
-      },
-
-      // 根据游戏进度显示鼓励
-      encourage(progress) {
-        if (progress.stars > 0 && progress.stars % 10 === 0) {
-          this.showMessage(`太棒了！你已经收集了${progress.stars}颗星星！`);
-        }
-      }
-    };
-
-    function interactMascot() {
-      MascotSystem.interact();
-    }
-
     // 切换学习报告显示
     function toggleReport() {
       const content = document.getElementById('report-content');
@@ -2117,12 +1982,17 @@
     function showEncouragement(callback) {
       const message = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
       
+      // 提取emoji和文本
+      const emojiMatch = message.text.match(/[🎉⭐🌟🎊👏🏆🎈💪]/);
+      const emoji = emojiMatch ? emojiMatch[0] : '🎉';
+      const text = message.text.replace(/[🎉⭐🌟🎊👏🏆🎈💪]\s*/, '');
+      
       const overlay = document.createElement('div');
       overlay.className = 'encouragement-overlay';
       overlay.innerHTML = `
         <div class="encouragement-content">
-          <div class="encouragement-emoji">${message.text.match(/^[\u{1F300}-\u{1F9FF}]/u)?.[0] || '🎉'}</div>
-          <div class="encouragement-text">${message.text.replace(/^[\u{1F300}-\u{1F9FF}]\s*/, '')}</div>
+          <div class="encouragement-emoji">${emoji}</div>
+          <div class="encouragement-text">${text}</div>
           <div class="encouragement-subtext">${message.subtext}</div>
           <div class="encouragement-stars">⭐ ⭐ ⭐</div>
         </div>
@@ -2809,8 +2679,6 @@
       // 记录游戏历史
       if (!progress.gameHistory) progress.gameHistory = {};
       progress.gameHistory.match = true;
-      // 困难模式标记
-      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
       // 检查成就
       AchievementSystem.checkAchievements();
@@ -2829,8 +2697,6 @@
       // 记录游戏历史
       if (!progress.gameHistory) progress.gameHistory = {};
       progress.gameHistory.sequence = true;
-      // 困难模式标记
-      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
       // 检查成就
       AchievementSystem.checkAchievements();
@@ -2849,8 +2715,6 @@
       // 记录游戏历史
       if (!progress.gameHistory) progress.gameHistory = {};
       progress.gameHistory.add = true;
-      // 困难模式标记
-      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
       // 检查成就
       AchievementSystem.checkAchievements();
@@ -2872,9 +2736,6 @@
       document.getElementById('achievement-list').innerHTML = AchievementSystem.renderAchievementPanel();
       document.getElementById('achievement-unlocked').textContent = AchievementSystem.getUnlockedCount();
       document.getElementById('achievement-total').textContent = AchievementSystem.getTotalCount();
-
-      // 加载保存的难度设置
-      loadDifficulty();
 
       // 加载音效设置
       SFXManager.loadSettings();
