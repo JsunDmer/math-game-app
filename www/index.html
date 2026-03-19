@@ -742,32 +742,75 @@
       setTimeout(() => particle.remove(), 800);
     }
 
-    function speakNumber(num) {
-      if ('speechSynthesis' in window) {
-        // 取消之前的语音
-        speechSynthesis.cancel();
+    // 音频上下文（用于安卓WebView）
+    let audioContext = null;
+    let audioUnlocked = false;
+    
+    // 初始化音频系统
+    function initAudio() {
+      if (!audioContext) {
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+          console.log('AudioContext not supported');
+        }
+      }
+      
+      // 解锁音频（需要用户交互）
+      if (audioContext && audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      audioUnlocked = true;
+    }
+    
+    // 播放音效（使用Web Audio API，兼容安卓WebView）
+    function playBeep(frequency = 800, duration = 100, type = 'sine') {
+      if (!audioContext || !audioUnlocked) return;
+      
+      try {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
         
-        const utterance = new SpeechSynthesisUtterance(String(num));
-        utterance.lang = 'zh-CN';
-        utterance.rate = 0.8;
-        utterance.volume = 1;
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
         
-        // 安卓WebView需要延迟播放
-        setTimeout(() => {
-          speechSynthesis.speak(utterance);
-        }, 50);
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration / 1000);
+      } catch (e) {
+        console.log('Audio play failed:', e);
       }
     }
     
-    // 初始化音频（解决安卓WebView音频问题）
-    function initAudio() {
+    // 语音播报（兼容安卓WebView）
+    function speakNumber(num) {
+      // 先播放音效提示
+      playBeep(600, 150, 'sine');
+      
+      // 尝试使用语音合成
       if ('speechSynthesis' in window) {
-        // 预热语音合成引擎
-        const utterance = new SpeechSynthesisUtterance('');
-        utterance.lang = 'zh-CN';
-        utterance.volume = 0;
-        speechSynthesis.speak(utterance);
-        speechSynthesis.cancel();
+        try {
+          // 取消之前的语音
+          window.speechSynthesis.cancel();
+          
+          const utterance = new SpeechSynthesisUtterance(String(num));
+          utterance.lang = 'zh-CN';
+          utterance.rate = 0.9;
+          utterance.volume = 1;
+          utterance.pitch = 1.1;
+          
+          // 安卓WebView需要延迟播放
+          setTimeout(() => {
+            window.speechSynthesis.speak(utterance);
+          }, 100);
+        } catch (e) {
+          console.log('Speech synthesis failed:', e);
+        }
       }
     }
 
@@ -1303,17 +1346,27 @@
     document.addEventListener('DOMContentLoaded', () => {
       ProgressManager.updateDisplay();
       
-      // 初始化音频（安卓WebView需要用户交互才能播放音频）
+      // 初始化音频系统
       initAudio();
       
-      // 添加首次点击监听器解锁音频
-      const unlockAudio = () => {
+      // 解锁音频 - 需要用户交互（安卓WebView要求）
+      const unlockAudio = function() {
         initAudio();
-        document.removeEventListener('touchstart', unlockAudio);
-        document.removeEventListener('click', unlockAudio);
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        audioUnlocked = true;
+        
+        // 播放测试音确认音频已解锁
+        setTimeout(() => {
+          playBeep(800, 50);
+        }, 100);
       };
-      document.addEventListener('touchstart', unlockAudio, { once: true });
+      
+      // 监听各种用户交互事件
+      document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
       document.addEventListener('click', unlockAudio, { once: true });
+      document.addEventListener('touchend', unlockAudio, { once: true, passive: true });
     });
   </script>
 </body>
