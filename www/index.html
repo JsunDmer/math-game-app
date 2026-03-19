@@ -627,6 +627,98 @@
         margin-top: 5px;
       }
     }
+    
+    /* 平板优化 (768px - 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .game-container { 
+        max-width: 900px; 
+        padding: 30px;
+      }
+      .home-title { font-size: 56px; }
+      .home-subtitle { font-size: 26px; }
+      
+      /* 首页游戏卡片2x2布局 */
+      .game-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 25px;
+        max-width: 700px;
+        margin: 0 auto;
+      }
+      .game-card { 
+        padding: 50px 30px; 
+        min-height: 200px;
+      }
+      .game-icon { font-size: 72px; }
+      .game-title { font-size: 32px; }
+      .game-desc { font-size: 18px; }
+      
+      /* 游戏内元素放大 */
+      .big-number { font-size: 120px; }
+      .items-grid { 
+        grid-template-columns: repeat(5, 1fr); 
+        gap: 20px;
+        max-width: 600px;
+      }
+      .count-item { 
+        width: 100px; 
+        height: 100px; 
+        font-size: 50px;
+      }
+      
+      .number-bubble { 
+        width: 100px; 
+        height: 100px; 
+        font-size: 50px;
+      }
+      
+      .answer-card {
+        padding: 25px 35px;
+        min-width: 150px;
+      }
+      .answer-card-number { font-size: 56px; }
+      
+      .add-item { font-size: 50px; }
+      .add-group { padding: 25px; min-width: 150px; }
+      
+      /* 顶部栏 */
+      .top-bar {
+        padding: 20px 30px;
+      }
+      .back-btn {
+        padding: 15px 30px;
+        font-size: 20px;
+      }
+      .game-title-header { font-size: 32px; }
+      
+      /* 进度面板 */
+      .progress-panel {
+        padding: 30px;
+      }
+      .progress-value { font-size: 42px; }
+      .progress-label { font-size: 16px; }
+    }
+    
+    /* 大屏幕平板 (1024px以上) */
+    @media (min-width: 1025px) {
+      .game-container { 
+        max-width: 1200px; 
+        padding: 40px;
+      }
+      .home-title { font-size: 64px; }
+      
+      .game-grid { 
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 30px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .game-card { 
+        padding: 60px 40px; 
+        min-height: 240px;
+      }
+      .game-icon { font-size: 80px; }
+      .game-title { font-size: 36px; }
+    }
   </style>
 </head>
 <body>
