@@ -464,12 +464,16 @@
     .game-container {
       touch-action: pan-y;
       overscroll-behavior: contain;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     
-    /* 游戏页面防止滚动 */
+    /* 游戏页面允许滚动 */
     .game-page {
-      touch-action: none;
-      overscroll-behavior: none;
+      touch-action: pan-y;
+      overscroll-behavior: contain;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* 响应式 */
@@ -553,6 +557,73 @@
       .game-icon { font-size: 40px; }
       .count-item { width: 60px; height: 60px; font-size: 28px; }
       .number-bubble { width: 60px; height: 60px; font-size: 28px; }
+    }
+    
+    /* 加法游戏手机优化 */
+    @media (max-width: 768px) {
+      .add-scene {
+        padding: 15px;
+      }
+      .add-story {
+        font-size: 16px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .add-groups {
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .add-group {
+        padding: 10px;
+        min-width: 80px;
+      }
+      .add-group-label {
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+      .add-item {
+        font-size: 24px;
+      }
+      .add-operator-big {
+        font-size: 32px;
+      }
+      .add-result-box {
+        padding: 10px;
+        margin-top: 10px;
+      }
+      .add-result-label {
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+      .add-count-box {
+        padding: 8px 12px;
+      }
+      .add-count-number {
+        font-size: 24px;
+      }
+      .add-count-label {
+        font-size: 11px;
+      }
+      .add-hint {
+        font-size: 13px;
+        margin-top: 8px;
+        padding: 6px;
+      }
+      .answer-options-visual {
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .answer-card {
+        padding: 10px 15px;
+        min-width: 80px;
+      }
+      .answer-card-number {
+        font-size: 28px;
+      }
+      .answer-card-items {
+        font-size: 14px;
+        margin-top: 5px;
+      }
     }
   </style>
 </head>
@@ -673,10 +744,30 @@
 
     function speakNumber(num) {
       if ('speechSynthesis' in window) {
+        // 取消之前的语音
+        speechSynthesis.cancel();
+        
         const utterance = new SpeechSynthesisUtterance(String(num));
         utterance.lang = 'zh-CN';
         utterance.rate = 0.8;
+        utterance.volume = 1;
+        
+        // 安卓WebView需要延迟播放
+        setTimeout(() => {
+          speechSynthesis.speak(utterance);
+        }, 50);
+      }
+    }
+    
+    // 初始化音频（解决安卓WebView音频问题）
+    function initAudio() {
+      if ('speechSynthesis' in window) {
+        // 预热语音合成引擎
+        const utterance = new SpeechSynthesisUtterance('');
+        utterance.lang = 'zh-CN';
+        utterance.volume = 0;
         speechSynthesis.speak(utterance);
+        speechSynthesis.cancel();
       }
     }
 
@@ -1211,6 +1302,18 @@
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       ProgressManager.updateDisplay();
+      
+      // 初始化音频（安卓WebView需要用户交互才能播放音频）
+      initAudio();
+      
+      // 添加首次点击监听器解锁音频
+      const unlockAudio = () => {
+        initAudio();
+        document.removeEventListener('touchstart', unlockAudio);
+        document.removeEventListener('click', unlockAudio);
+      };
+      document.addEventListener('touchstart', unlockAudio, { once: true });
+      document.addEventListener('click', unlockAudio, { once: true });
     });
   </script>
 </body>
