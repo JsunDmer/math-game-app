@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>🔢 数字乐园</title>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
-  <script type="module">
-    import { TextToSpeech } from '@capacitor-community/text-to-speech';
-    window.TTSTextToSpeech = TextToSpeech;
-  </script>
+  <!-- Capacitor TTS 插件 -->
+  <script src="capacitor.js"></script>
   <style>
     :root {
       --color-blue: #4A90E2;
@@ -825,41 +823,29 @@
       return numberToChinese[num] || String(num);
     }
     
-    // 语音播报（使用Capacitor原生TTS）
-    async function speakNumber(num) {
+    // 语音播报（使用统一的TTS接口）
+    function speakNumber(num) {
       // 先播放音效提示
       playBeep(600, 150, 'sine');
       
       const chineseNum = getChineseNumber(num);
       
-      // 尝试使用Capacitor原生TTS（安卓APP中）
-      if (window.TTSTextToSpeech) {
-        try {
-          await window.TTSTextToSpeech.speak({
-            text: chineseNum,
-            lang: 'zh-CN',
-            rate: 1.0,
-            pitch: 1.0,
-            volume: 1.0
-          });
-          console.log('Native TTS success');
-          return;
-        } catch (e) {
-          console.log('Native TTS failed:', e);
-        }
-      }
-      
-      // 降级到Web Speech API（浏览器中）
-      if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(chineseNum);
-          utterance.lang = 'zh-CN';
-          utterance.rate = 0.9;
-          utterance.volume = 1;
-          window.speechSynthesis.speak(utterance);
-        } catch (e) {
-          console.log('Web TTS failed:', e);
+      // 使用AppTTS封装（自动选择原生或Web TTS）
+      if (window.AppTTS) {
+        window.AppTTS.speak(chineseNum);
+      } else {
+        // 降级到Web TTS
+        if ('speechSynthesis' in window) {
+          try {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(chineseNum);
+            utterance.lang = 'zh-CN';
+            utterance.rate = 0.9;
+            utterance.volume = 1;
+            window.speechSynthesis.speak(utterance);
+          } catch (e) {
+            console.log('Web TTS failed:', e);
+          }
         }
       }
     }
@@ -931,7 +917,7 @@
       item.classList.add('clicked');
       countState.clickedCount++;
       document.getElementById('current-number').textContent = countState.clickedCount;
-      speakNumber(countState.clickedCount).catch(() => {});
+      speakNumber(countState.clickedCount);
       if (countState.clickedCount === countState.targetNumber) {
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
@@ -1130,7 +1116,7 @@
         bubble.classList.add('correct');
         sequenceState.completed.push(num);
         sequenceState.currentNumber++;
-        speakNumber(num).catch(() => {});
+        speakNumber(num);
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
         if (sequenceState.currentNumber > 10) setTimeout(() => showSequenceComplete(), 1000);
@@ -1302,7 +1288,7 @@
       document.getElementById('total-count').textContent = addState.totalCounted;
       
       // 播放计数音效
-      speakNumber(addState.totalCounted).catch(() => {});
+       speakNumber(addState.totalCounted);
       
       // 显示星星动画
       const rect = item.getBoundingClientRect();
