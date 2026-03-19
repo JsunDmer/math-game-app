@@ -121,6 +121,100 @@
       pointer-events: none;
     }
 
+    /* 鼓励弹窗 */
+    .encouragement-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      animation: fade-in 0.3s ease-out;
+    }
+    .encouragement-overlay.fade-out {
+      animation: fade-out 0.5s ease-out forwards;
+    }
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes fade-out {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .encouragement-content {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 30px;
+      padding: 40px 50px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes pop-in {
+      from {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    .encouragement-emoji {
+      font-size: 64px;
+      margin-bottom: 15px;
+      animation: bounce 0.6s ease infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+    .encouragement-text {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .encouragement-subtext {
+      font-size: 18px;
+      opacity: 0.95;
+      margin-bottom: 20px;
+    }
+    .encouragement-stars {
+      font-size: 24px;
+      letter-spacing: 5px;
+      animation: twinkle 1s ease infinite alternate;
+    }
+    @keyframes twinkle {
+      from { opacity: 0.6; transform: scale(1); }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* 平板上的鼓励弹窗 */
+    @media (max-width: 768px) {
+      .encouragement-content {
+        padding: 30px 35px;
+        margin: 20px;
+      }
+      .encouragement-emoji {
+        font-size: 48px;
+      }
+      .encouragement-text {
+        font-size: 22px;
+      }
+      .encouragement-subtext {
+        font-size: 15px;
+      }
+      .encouragement-stars {
+        font-size: 20px;
+      }
+    }
+
     /* 游戏1: 数数乐园 */
     .count-container { text-align: center; padding: 20px; }
     .count-display {
@@ -836,6 +930,50 @@
       setTimeout(() => particle.remove(), 800);
     }
 
+    // 鼓励语句库
+    const encouragementMessages = [
+      { text: "🎉 太棒了！答对了！", subtext: "准备好下一题了吗？" },
+      { text: "⭐ 真厉害！继续加油！", subtext: "下一题在等你哦~" },
+      { text: "🌟 做得好！你真聪明！", subtext: "让我们继续挑战吧！" },
+      { text: "🎊 恭喜你答对了！", subtext: "下一题会更精彩！" },
+      { text: "👏 太厉害了！继续保持！", subtext: "准备好了吗？开始下一题！" },
+      { text: "🏆 真棒！你进步真快！", subtext: "让我们看看下一题是什么~" },
+      { text: "🎈 好样的！答对了！", subtext: "继续加油哦！" },
+      { text: "💪 你真棒！又答对了！", subtext: "下一题来咯！" }
+    ];
+
+    // 显示鼓励弹窗
+    function showEncouragement(callback) {
+      const message = encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)];
+      
+      const overlay = document.createElement('div');
+      overlay.className = 'encouragement-overlay';
+      overlay.innerHTML = `
+        <div class="encouragement-content">
+          <div class="encouragement-emoji">${message.text.match(/^[\u{1F300}-\u{1F9FF}]/u)?.[0] || '🎉'}</div>
+          <div class="encouragement-text">${message.text.replace(/^[\u{1F300}-\u{1F9FF}]\s*/, '')}</div>
+          <div class="encouragement-subtext">${message.subtext}</div>
+          <div class="encouragement-stars">⭐ ⭐ ⭐</div>
+        </div>
+      `;
+      
+      document.body.appendChild(overlay);
+      
+      // 播放成功音效
+      playBeep(800, 100, 'sine');
+      setTimeout(() => playBeep(1000, 150, 'sine'), 100);
+      setTimeout(() => playBeep(1200, 200, 'sine'), 250);
+      
+      // 自动关闭
+      setTimeout(() => {
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+          overlay.remove();
+          if (callback) callback();
+        }, 500);
+      }, 2000);
+    }
+
     // 音频上下文（用于安卓WebView）
     let audioContext = null;
     let audioUnlocked = false;
@@ -1013,11 +1151,11 @@
       if (countState.clickedCount === countState.targetNumber) {
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
-        setTimeout(() => {
+        showEncouragement(() => {
           countState.targetNumber = Math.floor(Math.random() * 10) + 1;
           countState.clickedCount = 0;
           renderCountGame();
-        }, 1500);
+        });
       }
     }
 
@@ -1211,8 +1349,11 @@
         speakNumber(num);
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
-        if (sequenceState.currentNumber > 10) setTimeout(() => showSequenceComplete(), 1000);
-        else setTimeout(() => renderSequenceGame(), 500);
+        if (sequenceState.currentNumber > 10) {
+          setTimeout(() => showSequenceComplete(), 1000);
+        } else {
+          showEncouragement(() => renderSequenceGame());
+        }
       } else {
         bubble.classList.add('wrong');
         setTimeout(() => bubble.classList.remove('wrong'), 500);
@@ -1415,10 +1556,11 @@
         
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
         
-        setTimeout(() => {
-          if (addState.round < 5) renderAddGame();
-          else showAddComplete();
-        }, 2000);
+        if (addState.round < 5) {
+          showEncouragement(() => renderAddGame());
+        } else {
+          setTimeout(() => showAddComplete(), 1000);
+        }
       } else {
         setTimeout(() => {
           cards.forEach(card => {
