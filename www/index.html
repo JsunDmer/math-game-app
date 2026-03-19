@@ -1340,25 +1340,25 @@
       </div>
       
       <div class="game-grid">
-        <div class="game-card blue touch-feedback" ontouchstart="" onclick="startGame('count')">
+        <div class="game-card blue touch-feedback" onclick="startGame('count')">
           <div class="game-icon">🔢</div>
           <div class="game-title">数数乐园</div>
           <div class="game-desc">点击物品学数字</div>
           <div class="game-difficulty" id="count-difficulty">当前: 1-5</div>
         </div>
-        <div class="game-card orange touch-feedback" ontouchstart="" onclick="startGame('match')">
+        <div class="game-card orange touch-feedback" onclick="startGame('match')">
           <div class="game-icon">🎯</div>
           <div class="game-title">数字配对</div>
           <div class="game-desc">数字和数量配对</div>
           <div class="game-difficulty" id="match-difficulty">当前: 1-5</div>
         </div>
-        <div class="game-card green touch-feedback" ontouchstart="" onclick="startGame('sequence')">
+        <div class="game-card green touch-feedback" onclick="startGame('sequence')">
           <div class="game-icon">🔗</div>
           <div class="game-title">数字接龙</div>
           <div class="game-desc">按顺序点数字</div>
           <div class="game-difficulty" id="sequence-difficulty">当前: 1-5</div>
         </div>
-        <div class="game-card purple touch-feedback" ontouchstart="" onclick="startGame('add')">
+        <div class="game-card purple touch-feedback" onclick="startGame('add')">
           <div class="game-icon">➕</div>
           <div class="game-title">趣味加法</div>
           <div class="game-desc">互动式学加法</div>
@@ -1474,22 +1474,32 @@
     
     // 设置难度
     function setDifficulty(level) {
+      if (!DIFFICULTY_CONFIG[level]) return;
+      
       currentDifficulty = level;
       const config = DIFFICULTY_CONFIG[level];
       
-      // 更新按钮状态
-      document.querySelectorAll('.difficulty-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.level === level) {
+      // 更新按钮状态 - 使用更可靠的方式
+      const buttons = document.querySelectorAll('.difficulty-btn');
+      buttons.forEach(btn => {
+        const btnLevel = btn.getAttribute('data-level');
+        if (btnLevel === level) {
           btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
         }
       });
       
       // 更新游戏卡片显示
-      document.getElementById('count-difficulty').textContent = `当前: ${config.range}`;
-      document.getElementById('match-difficulty').textContent = `当前: ${config.range}`;
-      document.getElementById('sequence-difficulty').textContent = `当前: ${config.range}`;
-      document.getElementById('add-difficulty').textContent = `当前: ${config.range}`;
+      const countDiff = document.getElementById('count-difficulty');
+      const matchDiff = document.getElementById('match-difficulty');
+      const sequenceDiff = document.getElementById('sequence-difficulty');
+      const addDiff = document.getElementById('add-difficulty');
+      
+      if (countDiff) countDiff.textContent = `当前: ${config.range}`;
+      if (matchDiff) matchDiff.textContent = `当前: ${config.range}`;
+      if (sequenceDiff) sequenceDiff.textContent = `当前: ${config.range}`;
+      if (addDiff) addDiff.textContent = `当前: ${config.range}`;
       
       // 保存到本地
       try {
