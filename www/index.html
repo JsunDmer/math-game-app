@@ -59,6 +59,71 @@
     .game-icon { font-size: 56px; margin-bottom: 12px; }
     .game-title { font-size: 22px; margin-bottom: 6px; }
     .game-desc { font-size: 14px; color: #888; }
+    .game-difficulty {
+      font-size: 12px;
+      color: var(--color-blue);
+      margin-top: 8px;
+      padding: 4px 10px;
+      background: rgba(74, 144, 226, 0.1);
+      border-radius: 12px;
+      display: inline-block;
+    }
+    
+    /* 难度选择器 */
+    .difficulty-selector {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .difficulty-label {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 12px;
+    }
+    .difficulty-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .difficulty-btn {
+      flex: 1;
+      min-width: 90px;
+      max-width: 120px;
+      padding: 12px 8px;
+      border: 2px solid #e0e0e0;
+      border-radius: 16px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .difficulty-btn:hover {
+      border-color: var(--color-blue);
+      transform: translateY(-2px);
+    }
+    .difficulty-btn.active {
+      border-color: var(--color-blue);
+      background: linear-gradient(135deg, rgba(74,144,226,0.1), rgba(118,75,162,0.1));
+      box-shadow: 0 4px 12px rgba(74,144,226,0.2);
+    }
+    .difficulty-icon {
+      font-size: 28px;
+    }
+    .difficulty-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
+    .difficulty-range {
+      font-size: 12px;
+      color: #888;
+    }
     .progress-panel {
       background: linear-gradient(135deg, var(--color-purple), #6B2C91);
       border-radius: 20px;
@@ -572,6 +637,436 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* 温和的错误提示 */
+    .gentle-hint {
+      position: fixed;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #FFE5B4 0%, #FFD699 100%);
+      border: 3px solid #FFA500;
+      border-radius: 25px;
+      padding: 15px 25px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 8px 25px rgba(255, 165, 0, 0.3);
+      z-index: 10000;
+      animation: gentleHintPop 0.4s ease;
+      max-width: 90%;
+    }
+    @keyframes gentleHintPop {
+      0% { transform: translateX(-50%) scale(0.8); opacity: 0; }
+      50% { transform: translateX(-50%) scale(1.05); }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    }
+    .gentle-hint .hint-icon {
+      font-size: 28px;
+      animation: hintIconWiggle 1s ease infinite;
+    }
+    @keyframes hintIconWiggle {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+    .gentle-hint .hint-text {
+      font-size: 18px;
+      color: #8B4513;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    /* 音量控制面板 */
+    .audio-control-panel {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .audio-control-title {
+      font-size: 18px;
+      color: #666;
+      margin-bottom: 15px;
+    }
+    .audio-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .audio-control-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .audio-toggle-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    }
+    .audio-toggle-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+    }
+    .audio-toggle-btn.active {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 10px rgba(240, 147, 251, 0.3); }
+      50% { box-shadow: 0 4px 20px rgba(240, 147, 251, 0.6); }
+    }
+    .audio-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .audio-slider-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .audio-slider-container label {
+      font-size: 14px;
+      color: #666;
+    }
+    .audio-slider {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: #e0e0e0;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .audio-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+      transition: transform 0.2s;
+    }
+    .audio-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+    .audio-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+
+    /* 角色吉祥物 */
+    .mascot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9998;
+      transition: all 0.3s;
+    }
+    .mascot {
+      cursor: pointer;
+      position: relative;
+      animation: mascotFloat 3s ease-in-out infinite;
+    }
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .mascot-body {
+      font-size: 60px;
+      transition: transform 0.3s;
+    }
+    .mascot:hover .mascot-body {
+      transform: scale(1.1);
+    }
+    .mascot-speech {
+      position: absolute;
+      bottom: 70px;
+      right: 0;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+      font-size: 14px;
+      color: #333;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .mascot-speech.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .mascot-speech::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      right: 20px;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid white;
+    }
+
+    /* 学习报告面板 */
+    .report-panel {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .report-title {
+      font-size: 18px;
+      color: #333;
+      font-weight: bold;
+    }
+    .report-toggle {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+    .report-toggle:hover {
+      transform: scale(1.05);
+    }
+    .report-content {
+      margin-top: 20px;
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .report-stat {
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+      border-radius: 15px;
+    }
+    .report-stat-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--color-blue);
+      margin-bottom: 5px;
+    }
+    .report-stat-label {
+      font-size: 12px;
+      color: #666;
+    }
+    .report-chart {
+      margin-bottom: 20px;
+    }
+    .chart-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 100px;
+      padding: 10px;
+      background: #f5f5f5;
+      border-radius: 10px;
+    }
+    .chart-bar {
+      flex: 1;
+      background: linear-gradient(to top, var(--color-blue), #667eea);
+      border-radius: 5px 5px 0 0;
+      min-height: 10px;
+      position: relative;
+      transition: all 0.3s;
+    }
+    .chart-bar:hover {
+      opacity: 0.8;
+    }
+    .chart-bar-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #666;
+    }
+    .chart-bar-value {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--color-blue);
+      font-weight: bold;
+    }
+    .report-favorite {
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 100%);
+      border-radius: 15px;
+    }
+    .favorite-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .favorite-game {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* 成就系统样式 */
+    .achievement-popup {
+      position: fixed;
+      top: 100px;
+      right: -400px;
+      background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+      border-radius: 20px;
+      padding: 20px 25px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+      z-index: 10001;
+      transition: right 0.5s ease;
+      max-width: 350px;
+    }
+    .achievement-popup.show {
+      right: 20px;
+    }
+    .achievement-popup .achievement-icon {
+      font-size: 48px;
+      animation: achievementBounce 0.6s ease infinite alternate;
+    }
+    @keyframes achievementBounce {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+    .achievement-popup .achievement-content {
+      color: #333;
+    }
+    .achievement-popup .achievement-title {
+      font-size: 14px;
+      color: #8B4513;
+      margin-bottom: 4px;
+    }
+    .achievement-popup .achievement-name {
+      font-size: 20px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 4px;
+    }
+    .achievement-popup .achievement-desc {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* 成就面板 */
+    .achievement-panel {
+      background: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+    .achievement-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .achievement-panel-title {
+      font-size: 18px;
+      color: #333;
+    }
+    .achievement-progress {
+      font-size: 14px;
+      color: #666;
+    }
+    .achievement-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .achievement-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: #f5f5f5;
+      transition: all 0.3s;
+    }
+    .achievement-item.unlocked {
+      background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 100%);
+      border: 2px solid #FFD700;
+    }
+    .achievement-item.locked {
+      opacity: 0.6;
+    }
+    .achievement-item-icon {
+      font-size: 28px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 50%;
+    }
+    .achievement-item-info {
+      flex: 1;
+    }
+    .achievement-item-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 2px;
+    }
+    .achievement-item-desc {
+      font-size: 12px;
+      color: #888;
+    }
+
     /* 响应式 */
     @media (max-width: 768px) {
       .home-title { font-size: 36px; }
@@ -821,28 +1316,129 @@
     <div id="home-page" class="home-page visible">
       <h1 class="home-title">🔢 数字乐园</h1>
       <p class="home-subtitle">和数字做朋友，一起快乐学习！</p>
+      
+      <!-- 难度选择 -->
+      <div class="difficulty-selector">
+        <div class="difficulty-label">选择难度：</div>
+        <div class="difficulty-buttons">
+          <button class="difficulty-btn active" data-level="easy" onclick="setDifficulty('easy')">
+            <span class="difficulty-icon">🌱</span>
+            <span class="difficulty-name">简单</span>
+            <span class="difficulty-range">1-5</span>
+          </button>
+          <button class="difficulty-btn" data-level="normal" onclick="setDifficulty('normal')">
+            <span class="difficulty-icon">🌿</span>
+            <span class="difficulty-name">普通</span>
+            <span class="difficulty-range">1-10</span>
+          </button>
+          <button class="difficulty-btn" data-level="hard" onclick="setDifficulty('hard')">
+            <span class="difficulty-icon">🌳</span>
+            <span class="difficulty-name">困难</span>
+            <span class="difficulty-range">1-20</span>
+          </button>
+        </div>
+      </div>
+      
       <div class="game-grid">
         <div class="game-card blue touch-feedback" ontouchstart="" onclick="startGame('count')">
           <div class="game-icon">🔢</div>
           <div class="game-title">数数乐园</div>
           <div class="game-desc">点击物品学数字</div>
+          <div class="game-difficulty" id="count-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card orange touch-feedback" ontouchstart="" onclick="startGame('match')">
           <div class="game-icon">🎯</div>
           <div class="game-title">数字配对</div>
           <div class="game-desc">数字和数量配对</div>
+          <div class="game-difficulty" id="match-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card green touch-feedback" ontouchstart="" onclick="startGame('sequence')">
           <div class="game-icon">🔗</div>
           <div class="game-title">数字接龙</div>
           <div class="game-desc">按顺序点数字</div>
+          <div class="game-difficulty" id="sequence-difficulty">当前: 1-5</div>
         </div>
         <div class="game-card purple touch-feedback" ontouchstart="" onclick="startGame('add')">
           <div class="game-icon">➕</div>
           <div class="game-title">趣味加法</div>
           <div class="game-desc">互动式学加法</div>
+          <div class="game-difficulty" id="add-difficulty">当前: 1-5</div>
         </div>
       </div>
+      <!-- 音量控制面板 -->
+      <div class="audio-control-panel">
+        <div class="audio-control-title">🔊 声音设置</div>
+        <div class="audio-controls">
+          <div class="audio-control-item">
+            <button id="bgm-toggle" class="audio-toggle-btn" onclick="BGMManager.toggle()">🔇</button>
+            <div class="audio-slider-container">
+              <label>背景音乐</label>
+              <input type="range" id="bgm-volume" class="audio-slider" min="0" max="100" value="30" oninput="BGMManager.setVolume(this.value / 100)">
+            </div>
+          </div>
+          <div class="audio-control-item">
+            <span class="audio-icon">🎵</span>
+            <div class="audio-slider-container">
+              <label>音效</label>
+              <input type="range" id="sfx-volume" class="audio-slider" min="0" max="100" value="50" oninput="SFXManager.setVolume(this.value / 100)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 角色吉祥物 -->
+      <div class="mascot-container" id="mascot-container">
+        <div class="mascot" onclick="interactMascot()">
+          <div class="mascot-body">🐻</div>
+          <div class="mascot-speech" id="mascot-speech">你好！我是小熊数学助手！</div>
+        </div>
+      </div>
+
+      <!-- 学习报告面板 -->
+      <div class="report-panel">
+        <div class="report-header">
+          <div class="report-title">📊 学习报告</div>
+          <button class="report-toggle" onclick="toggleReport()">展开 ▼</button>
+        </div>
+        <div class="report-content" id="report-content" style="display: none;">
+          <div class="report-stats">
+            <div class="report-stat">
+              <div class="report-stat-value" id="report-total-time">0</div>
+              <div class="report-stat-label">分钟学习</div>
+            </div>
+            <div class="report-stat">
+              <div class="report-stat-value" id="report-total-questions">0</div>
+              <div class="report-stat-label">答题总数</div>
+            </div>
+            <div class="report-stat">
+              <div class="report-stat-value" id="report-accuracy">0%</div>
+              <div class="report-stat-label">正确率</div>
+            </div>
+          </div>
+          <div class="report-chart">
+            <div class="chart-title">每日学习进度</div>
+            <div class="chart-bars" id="daily-chart">
+              <!-- 动态生成 -->
+            </div>
+          </div>
+          <div class="report-favorite">
+            <div class="favorite-title">最爱玩的游戏</div>
+            <div class="favorite-game" id="favorite-game">🔢 数数乐园</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 成就面板 -->
+      <div class="achievement-panel">
+        <div class="achievement-panel-header">
+          <div class="achievement-panel-title">🏆 我的成就</div>
+          <div class="achievement-progress"><span id="achievement-unlocked">0</span> / <span id="achievement-total">12</span></div>
+        </div>
+        <div class="achievement-list" id="achievement-list">
+          <!-- 成就列表由JS动态生成 -->
+        </div>
+      </div>
+
       <div class="progress-panel">
         <div class="progress-item">
           <div class="progress-value">⭐ <span id="stars-count">0</span></div>
@@ -866,6 +1462,263 @@
   </div>
 
   <script>
+    // 难度配置
+    const DIFFICULTY_CONFIG = {
+      easy: { maxNumber: 5, name: '简单', range: '1-5' },
+      normal: { maxNumber: 10, name: '普通', range: '1-10' },
+      hard: { maxNumber: 20, name: '困难', range: '1-20' }
+    };
+    
+    // 当前难度
+    let currentDifficulty = 'easy';
+    
+    // 设置难度
+    function setDifficulty(level) {
+      currentDifficulty = level;
+      const config = DIFFICULTY_CONFIG[level];
+      
+      // 更新按钮状态
+      document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.level === level) {
+          btn.classList.add('active');
+        }
+      });
+      
+      // 更新游戏卡片显示
+      document.getElementById('count-difficulty').textContent = `当前: ${config.range}`;
+      document.getElementById('match-difficulty').textContent = `当前: ${config.range}`;
+      document.getElementById('sequence-difficulty').textContent = `当前: ${config.range}`;
+      document.getElementById('add-difficulty').textContent = `当前: ${config.range}`;
+      
+      // 保存到本地
+      try {
+        localStorage.setItem('math-game-difficulty', level);
+      } catch (e) {}
+      
+      // 播放音效
+      playBeep(600, 100);
+    }
+    
+    // 加载保存的难度
+    function loadDifficulty() {
+      try {
+        const saved = localStorage.getItem('math-game-difficulty');
+        if (saved && DIFFICULTY_CONFIG[saved]) {
+          setDifficulty(saved);
+        }
+      } catch (e) {}
+    }
+    
+    // 获取当前最大数字
+    function getMaxNumber() {
+      return DIFFICULTY_CONFIG[currentDifficulty].maxNumber;
+    }
+
+    // 温和的错误提示消息
+    const GENTLE_HINTS = {
+      sequence: ['再想想看～', '不对哦，再试一次！', '加油，你可以的！', '仔细看看数字顺序～'],
+      match: ['这个数字不对哦～', '再找找看其他数字！', '加油，再试一次！', '看看物品的数量～'],
+      add: ['再数一遍试试～', '不对哦，继续加油！', '仔细数一数～', '再想想看！']
+    };
+
+    // 背景音乐管理器
+    const BGMManager = {
+      audioContext: null,
+      isPlaying: false,
+      volume: 0.3,
+      currentNote: 0,
+      notes: [262, 294, 330, 349, 392, 440, 494, 523], // C大调音阶
+      melody: [0, 2, 4, 5, 4, 2, 0, 2, 4, 5, 7, 5, 4, 2, 0, -1], // 简单旋律
+      tempo: 300, // 毫秒
+      nextNoteTime: 0,
+      timerId: null,
+
+      init() {
+        if (!this.audioContext) {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        this.loadSettings();
+      },
+
+      loadSettings() {
+        try {
+          const saved = localStorage.getItem('math-game-bgm');
+          if (saved) {
+            const settings = JSON.parse(saved);
+            this.volume = settings.volume ?? 0.3;
+            this.isPlaying = settings.isPlaying ?? false;
+          }
+        } catch (e) {}
+      },
+
+      saveSettings() {
+        try {
+          localStorage.setItem('math-game-bgm', JSON.stringify({
+            volume: this.volume,
+            isPlaying: this.isPlaying
+          }));
+        } catch (e) {}
+      },
+
+      playNote(frequency, duration) {
+        if (!this.audioContext) return;
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+
+        gainNode.gain.setValueAtTime(this.volume * 0.1, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + duration);
+      },
+
+      scheduleNextNote() {
+        if (!this.isPlaying) return;
+
+        const now = this.audioContext.currentTime;
+        const noteIndex = this.melody[this.currentNote % this.melody.length];
+
+        if (noteIndex >= 0) {
+          const frequency = this.notes[noteIndex];
+          this.playNote(frequency, 0.3);
+        }
+
+        this.currentNote++;
+        this.timerId = setTimeout(() => this.scheduleNextNote(), this.tempo);
+      },
+
+      start() {
+        if (this.isPlaying) return;
+        this.init();
+        this.isPlaying = true;
+        this.saveSettings();
+        this.scheduleNextNote();
+        this.updateUI();
+      },
+
+      stop() {
+        this.isPlaying = false;
+        if (this.timerId) {
+          clearTimeout(this.timerId);
+          this.timerId = null;
+        }
+        this.saveSettings();
+        this.updateUI();
+      },
+
+      toggle() {
+        if (this.isPlaying) {
+          this.stop();
+        } else {
+          this.start();
+        }
+      },
+
+      setVolume(value) {
+        this.volume = Math.max(0, Math.min(1, value));
+        this.saveSettings();
+        this.updateUI();
+      },
+
+      updateUI() {
+        const btn = document.getElementById('bgm-toggle');
+        const slider = document.getElementById('bgm-volume');
+        if (btn) {
+          btn.textContent = this.isPlaying ? '🔊' : '🔇';
+          btn.classList.toggle('active', this.isPlaying);
+        }
+        if (slider) {
+          slider.value = this.volume * 100;
+        }
+      }
+    };
+
+    // 音效管理器
+    const SFXManager = {
+      volume: 0.5,
+
+      loadSettings() {
+        try {
+          const saved = localStorage.getItem('math-game-sfx');
+          if (saved) {
+            const settings = JSON.parse(saved);
+            this.volume = settings.volume ?? 0.5;
+          }
+        } catch (e) {}
+      },
+
+      saveSettings() {
+        try {
+          localStorage.setItem('math-game-sfx', JSON.stringify({ volume: this.volume }));
+        } catch (e) {}
+      },
+
+      setVolume(value) {
+        this.volume = Math.max(0, Math.min(1, value));
+        this.saveSettings();
+      },
+
+      playCorrect() {
+        // 播放正确的音效
+        playBeep(800, 150, this.volume);
+        setTimeout(() => playBeep(1000, 200, this.volume), 100);
+      },
+
+      playWrong() {
+        // 播放错误的音效
+        playBeep(300, 200, this.volume);
+      },
+
+      playClick() {
+        // 播放点击音效
+        playBeep(600, 50, this.volume * 0.5);
+      },
+
+      playStar() {
+        // 播放获得星星的音效
+        playBeep(1200, 100, this.volume);
+        setTimeout(() => playBeep(1500, 150, this.volume), 80);
+        setTimeout(() => playBeep(1800, 200, this.volume), 160);
+      }
+    };
+
+    // 显示温和的错误提示
+    function showGentleHint(gameType, customMessage) {
+      const hints = GENTLE_HINTS[gameType] || GENTLE_HINTS.sequence;
+      const message = customMessage || hints[Math.floor(Math.random() * hints.length)];
+
+      // 移除已有的提示
+      const existingHint = document.querySelector('.gentle-hint');
+      if (existingHint) existingHint.remove();
+
+      // 创建提示元素
+      const hintDiv = document.createElement('div');
+      hintDiv.className = 'gentle-hint';
+      hintDiv.innerHTML = `
+        <span class="hint-icon">💡</span>
+        <span class="hint-text">${message}</span>
+      `;
+      document.body.appendChild(hintDiv);
+
+      // 播放温和的提示音
+      playBeep(400, 80);
+
+      // 3秒后自动消失
+      setTimeout(() => {
+        if (hintDiv.parentNode) {
+          hintDiv.style.opacity = '0';
+          setTimeout(() => hintDiv.remove(), 300);
+        }
+      }, 2500);
+    }
+
     // 进度管理
     const ProgressManager = {
       STORAGE_KEY: 'math-game-progress',
@@ -895,6 +1748,312 @@
       }
     };
 
+    // 学习报告系统
+    const LearningReport = {
+      STORAGE_KEY: 'math-game-report',
+
+      load() {
+        try {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          return data ? JSON.parse(data) : this.getDefaultReport();
+        } catch (e) { return this.getDefaultReport(); }
+      },
+
+      getDefaultReport() {
+        return {
+          totalTime: 0, // 分钟
+          totalQuestions: 0,
+          correctAnswers: 0,
+          gamePlayCount: { count: 0, match: 0, sequence: 0, add: 0 },
+          dailyStats: {}, // 格式: { '2024-01-15': { questions: 10, correct: 8 } }
+          startTime: Date.now()
+        };
+      },
+
+      save(report) {
+        try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(report)); } catch (e) {}
+      },
+
+      // 记录答题
+      recordAnswer(isCorrect) {
+        const report = this.load();
+        report.totalQuestions++;
+        if (isCorrect) report.correctAnswers++;
+
+        // 记录每日统计
+        const today = new Date().toISOString().split('T')[0];
+        if (!report.dailyStats[today]) {
+          report.dailyStats[today] = { questions: 0, correct: 0 };
+        }
+        report.dailyStats[today].questions++;
+        if (isCorrect) report.dailyStats[today].correct++;
+
+        this.save(report);
+      },
+
+      // 记录游戏游玩
+      recordGamePlay(gameType) {
+        const report = this.load();
+        if (report.gamePlayCount[gameType] !== undefined) {
+          report.gamePlayCount[gameType]++;
+        }
+        this.save(report);
+      },
+
+      // 更新学习时间
+      updateStudyTime() {
+        const report = this.load();
+        const now = Date.now();
+        const sessionMinutes = Math.floor((now - report.startTime) / 60000);
+        report.totalTime += sessionMinutes;
+        report.startTime = now;
+        this.save(report);
+        return report.totalTime;
+      },
+
+      // 生成报告数据
+      generateReport() {
+        const report = this.load();
+        const accuracy = report.totalQuestions > 0
+          ? Math.round((report.correctAnswers / report.totalQuestions) * 100)
+          : 0;
+
+        // 找出最爱玩的游戏
+        const gameCounts = report.gamePlayCount;
+        const favoriteGame = Object.entries(gameCounts)
+          .sort((a, b) => b[1] - a[1])[0];
+        const gameNames = {
+          count: '🔢 数数乐园',
+          match: '🎯 数字配对',
+          sequence: '🔗 数字接龙',
+          add: '➕ 趣味加法'
+        };
+
+        // 获取最近7天的数据
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+          const date = new Date();
+          date.setDate(date.getDate() - i);
+          const dateStr = date.toISOString().split('T')[0];
+          const dayData = report.dailyStats[dateStr] || { questions: 0, correct: 0 };
+          last7Days.push({
+            date: date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }),
+            questions: dayData.questions,
+            correct: dayData.correct
+          });
+        }
+
+        return {
+          totalTime: report.totalTime,
+          totalQuestions: report.totalQuestions,
+          accuracy: accuracy,
+          favoriteGame: favoriteGame ? gameNames[favoriteGame[0]] : '🔢 数数乐园',
+          dailyData: last7Days
+        };
+      },
+
+      // 渲染图表
+      renderChart() {
+        const data = this.generateReport().dailyData;
+        const maxValue = Math.max(...data.map(d => d.questions), 1);
+
+        return data.map(day => {
+          const height = day.questions > 0 ? (day.questions / maxValue) * 80 : 5;
+          return `
+            <div class="chart-bar" style="height: ${height}px;">
+              <div class="chart-bar-value">${day.questions}</div>
+              <div class="chart-bar-label">${day.date}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    };
+
+    // 角色吉祥物系统
+    const MascotSystem = {
+      messages: [
+        '加油！你是最棒的！',
+        '数学真有趣！',
+        '继续挑战吧！',
+        '你进步好大！',
+        '星星在等着你！',
+        '相信自己！',
+        '数字是我们的朋友！',
+        '每一题都是进步！',
+        '坚持就是胜利！',
+        '你真聪明！'
+      ],
+      currentIndex: 0,
+
+      showMessage(message) {
+        const speech = document.getElementById('mascot-speech');
+        if (speech) {
+          speech.textContent = message || this.messages[Math.floor(Math.random() * this.messages.length)];
+          speech.classList.add('show');
+          setTimeout(() => speech.classList.remove('show'), 3000);
+        }
+      },
+
+      interact() {
+        this.showMessage();
+        // 播放可爱的音效
+        playBeep(600, 100);
+        setTimeout(() => playBeep(800, 100), 100);
+      },
+
+      // 根据游戏进度显示鼓励
+      encourage(progress) {
+        if (progress.stars > 0 && progress.stars % 10 === 0) {
+          this.showMessage(`太棒了！你已经收集了${progress.stars}颗星星！`);
+        }
+      }
+    };
+
+    function interactMascot() {
+      MascotSystem.interact();
+    }
+
+    // 切换学习报告显示
+    function toggleReport() {
+      const content = document.getElementById('report-content');
+      const btn = document.querySelector('.report-toggle');
+
+      if (content.style.display === 'none') {
+        // 更新学习时间
+        LearningReport.updateStudyTime();
+
+        // 生成并显示报告
+        const report = LearningReport.generateReport();
+        document.getElementById('report-total-time').textContent = report.totalTime;
+        document.getElementById('report-total-questions').textContent = report.totalQuestions;
+        document.getElementById('report-accuracy').textContent = report.accuracy + '%';
+        document.getElementById('favorite-game').textContent = report.favoriteGame;
+        document.getElementById('daily-chart').innerHTML = LearningReport.renderChart();
+
+        content.style.display = 'block';
+        btn.textContent = '收起 ▲';
+      } else {
+        content.style.display = 'none';
+        btn.textContent = '展开 ▼';
+      }
+    }
+
+    // 成就系统
+    const AchievementSystem = {
+      STORAGE_KEY: 'math-game-achievements',
+
+      // 成就定义
+      ACHIEVEMENTS: [
+        { id: 'first_star', name: '初次闪耀', desc: '获得第一颗星星', icon: '⭐', condition: (p) => p.stars >= 1 },
+        { id: 'star_10', name: '星星收集者', desc: '累计获得10颗星星', icon: '🌟', condition: (p) => p.stars >= 10 },
+        { id: 'star_50', name: '星星大师', desc: '累计获得50颗星星', icon: '✨', condition: (p) => p.stars >= 50 },
+        { id: 'star_100', name: '星星传奇', desc: '累计获得100颗星星', icon: '🌠', condition: (p) => p.stars >= 100 },
+        { id: 'first_complete', name: '初次通关', desc: '第一次完成游戏', icon: '🎯', condition: (p) => p.completedGames >= 1 },
+        { id: 'complete_5', name: '通关达人', desc: '累计通关5次', icon: '🏆', condition: (p) => p.completedGames >= 5 },
+        { id: 'complete_20', name: '通关大师', desc: '累计通关20次', icon: '🏅', condition: (p) => p.completedGames >= 20 },
+        { id: 'master_5', name: '数字学徒', desc: '掌握5个数字', icon: '🔢', condition: (p) => p.masteredNumbers.length >= 5 },
+        { id: 'master_10', name: '数字专家', desc: '掌握10个数字', icon: '📊', condition: (p) => p.masteredNumbers.length >= 10 },
+        { id: 'master_20', name: '数字大师', desc: '掌握20个数字', icon: '🎓', condition: (p) => p.masteredNumbers.length >= 20 },
+        { id: 'try_all_games', name: '全能选手', desc: '尝试过所有游戏模式', icon: '🎮', condition: (p) => p.gameHistory && Object.keys(p.gameHistory).length >= 4 },
+        { id: 'hard_mode', name: '挑战者', desc: '在困难模式下完成游戏', icon: '💪', condition: (p) => p.hardModeCompleted }
+      ],
+
+      load() {
+        try {
+          const data = localStorage.getItem(this.STORAGE_KEY);
+          return data ? JSON.parse(data) : [];
+        } catch (e) { return []; }
+      },
+
+      save(unlocked) {
+        try { localStorage.setItem(this.STORAGE_KEY, JSON.stringify(unlocked)); } catch (e) {}
+      },
+
+      checkAchievements() {
+        const progress = ProgressManager.load();
+        const unlocked = this.load();
+        const newAchievements = [];
+
+        this.ACHIEVEMENTS.forEach(achievement => {
+          if (!unlocked.includes(achievement.id) && achievement.condition(progress)) {
+            unlocked.push(achievement.id);
+            newAchievements.push(achievement);
+          }
+        });
+
+        if (newAchievements.length > 0) {
+          this.save(unlocked);
+          newAchievements.forEach((ach, index) => {
+            setTimeout(() => this.showAchievementPopup(ach), index * 1500);
+          });
+        }
+
+        return newAchievements;
+      },
+
+      showAchievementPopup(achievement) {
+        const popup = document.createElement('div');
+        popup.className = 'achievement-popup';
+        popup.innerHTML = `
+          <div class="achievement-icon">${achievement.icon}</div>
+          <div class="achievement-content">
+            <div class="achievement-title">解锁成就！</div>
+            <div class="achievement-name">${achievement.name}</div>
+            <div class="achievement-desc">${achievement.desc}</div>
+          </div>
+        `;
+        document.body.appendChild(popup);
+
+        // 播放成就解锁音效
+        this.playUnlockSound();
+
+        setTimeout(() => {
+          popup.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+          popup.classList.remove('show');
+          setTimeout(() => popup.remove(), 500);
+        }, 4000);
+      },
+
+      playUnlockSound() {
+        // 播放成就解锁音效
+        playBeep(523, 100);
+        setTimeout(() => playBeep(659, 100), 100);
+        setTimeout(() => playBeep(784, 100), 200);
+        setTimeout(() => playBeep(1047, 200), 300);
+      },
+
+      getUnlockedCount() {
+        return this.load().length;
+      },
+
+      getTotalCount() {
+        return this.ACHIEVEMENTS.length;
+      },
+
+      isUnlocked(id) {
+        return this.load().includes(id);
+      },
+
+      renderAchievementPanel() {
+        const unlocked = this.load();
+        return this.ACHIEVEMENTS.map(ach => {
+          const isUnlocked = unlocked.includes(ach.id);
+          return `
+            <div class="achievement-item ${isUnlocked ? 'unlocked' : 'locked'}">
+              <div class="achievement-item-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+              <div class="achievement-item-info">
+                <div class="achievement-item-name">${ach.name}</div>
+                <div class="achievement-item-desc">${ach.desc}</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    };
+
     // 页面导航
     function showPage(pageId) {
       document.querySelectorAll('.home-page, .game-page').forEach(p => {
@@ -907,6 +2066,8 @@
 
     function startGame(gameType) {
       showPage('game-page');
+      // 记录游戏游玩
+      LearningReport.recordGamePlay(gameType);
       switch(gameType) {
         case 'count': initCountGame(); break;
         case 'match': initMatchGame(); break;
@@ -1017,22 +2178,24 @@
     }
     
     // 播放音效（使用Web Audio API，兼容安卓WebView）
-    function playBeep(frequency = 800, duration = 100, type = 'sine') {
+    function playBeep(frequency = 800, duration = 100, volume = null, type = 'sine') {
       if (!audioContext || !audioUnlocked) return;
-      
+
       try {
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
-        
+
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
+
         oscillator.frequency.value = frequency;
         oscillator.type = type;
-        
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+
+        // 使用传入的音量或默认音量
+        const finalVolume = volume !== null ? volume * 0.3 : 0.3;
+        gainNode.gain.setValueAtTime(finalVolume, audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-        
+
         oscillator.start(audioContext.currentTime);
         oscillator.stop(audioContext.currentTime + duration / 1000);
       } catch (e) {
@@ -1107,23 +2270,32 @@
     }
 
     // 游戏1: 数数乐园
-    let countState = { targetNumber: 1, clickedCount: 0 };
+    let countState = { targetNumber: 1, clickedCount: 0, currentTheme: null, itemIcon: '' };
     function initCountGame() {
-      countState = { targetNumber: Math.floor(Math.random() * 10) + 1, clickedCount: 0 };
+      const maxNum = getMaxNumber();
+      // 随机选择主题
+      const theme = getRandomTheme();
+      countState = {
+        targetNumber: Math.floor(Math.random() * maxNum) + 1,
+        clickedCount: 0,
+        currentTheme: theme,
+        itemIcon: theme.items[Math.floor(Math.random() * theme.items.length)]
+      };
       renderCountGame();
     }
     function renderCountGame() {
-      const items = Array(countState.targetNumber).fill('🍎');
+      const items = Array(countState.targetNumber).fill(countState.itemIcon);
+      const bgColor = countState.currentTheme.bgColors[0];
       let html = `
         <div class="top-bar">
           <button class="back-btn" onclick="showHome()">← 返回</button>
           <div class="game-title-header">🔢 数数乐园</div>
           <div class="stars-display">⭐ <span id="game-stars">0</span></div>
         </div>
-        <div class="count-container">
+        <div class="count-container" style="background: ${bgColor};">
           <div class="count-display">
             <div class="big-number" id="current-number">0</div>
-            <div class="count-hint">👆 点击苹果数一数！</div>
+            <div class="count-hint">👆 点击${countState.currentTheme.name}数一数！</div>
           </div>
           <div class="items-grid">
             ${items.map((item, idx) => `
@@ -1152,8 +2324,13 @@
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
         showEncouragement(() => {
-          countState.targetNumber = Math.floor(Math.random() * 10) + 1;
+          const maxNum = getMaxNumber();
+          // 随机选择新主题
+          const theme = getRandomTheme();
+          countState.targetNumber = Math.floor(Math.random() * maxNum) + 1;
           countState.clickedCount = 0;
+          countState.currentTheme = theme;
+          countState.itemIcon = theme.items[Math.floor(Math.random() * theme.items.length)];
           renderCountGame();
         });
       }
@@ -1163,20 +2340,27 @@
     let matchState = { score: 0, currentNumbers: [], targetQuantities: [] };
     function initMatchGame() {
       matchState = { score: 0, currentNumbers: [], targetQuantities: [] };
-      const numbers = [1, 2, 3, 4, 5, 6];
+      const maxNum = getMaxNumber();
+      // 根据难度生成数字数组
+      const numbers = Array.from({length: Math.min(6, maxNum)}, (_, i) => i + 1);
       matchState.currentNumbers = [...numbers].sort(() => Math.random() - 0.5);
       matchState.targetQuantities = [...numbers].sort(() => Math.random() - 0.5);
+      // 随机选择主题
+      const theme = getRandomTheme();
+      matchState.currentTheme = theme;
+      matchState.itemIcon = theme.items[Math.floor(Math.random() * theme.items.length)];
       renderMatchGame();
     }
     function renderMatchGame() {
+      const bgColor = matchState.currentTheme.bgColors[0];
       let html = `
         <div class="top-bar">
           <button class="back-btn" onclick="showHome()">← 返回</button>
           <div class="game-title-header">🎯 数字配对</div>
           <div class="stars-display">⭐ <span id="game-stars">0</span></div>
         </div>
-        <div class="match-container">
-          <p class="game-instruction">把数字拖到对应数量的方框里！</p>
+        <div class="match-container" style="background: ${bgColor};">
+          <p class="game-instruction">把数字拖到对应数量的${matchState.currentTheme.name}方框里！</p>
           <div class="number-pool">
             ${matchState.currentNumbers.map(num => `
               <div class="number-card" draggable="true" data-number="${num}">${num}</div>
@@ -1185,7 +2369,7 @@
           <div class="quantity-targets">
             ${matchState.targetQuantities.map(qty => `
               <div class="quantity-slot" data-target="${qty}">
-                <div class="quantity-display">${'🍎'.repeat(qty)}</div>
+                <div class="quantity-display">${matchState.itemIcon.repeat(qty)}</div>
                 <div class="quantity-drop-zone" data-target="${qty}"></div>
               </div>
             `).join('')}
@@ -1254,9 +2438,10 @@
                 document.getElementById('game-stars').textContent = matchState.score;
                 ProgressManager.addStars(1);
                 showStarAnimation(pos.x, pos.y);
-                if (matchState.score === 6) setTimeout(() => showMatchComplete(), 500);
+                if (matchState.score === matchState.currentNumbers.length) setTimeout(() => showMatchComplete(), 500);
               } else {
                 zone.style.animation = 'shake 0.5s ease';
+                showGentleHint('match');
                 setTimeout(() => zone.style.animation = '', 500);
               }
             }
@@ -1289,9 +2474,10 @@
             document.getElementById('game-stars').textContent = matchState.score;
             ProgressManager.addStars(1);
             showStarAnimation(e.clientX, e.clientY);
-            if (matchState.score === 6) setTimeout(() => showMatchComplete(), 500);
+            if (matchState.score === matchState.currentNumbers.length) setTimeout(() => showMatchComplete(), 500);
           } else {
             zone.style.animation = 'shake 0.5s ease';
+            showGentleHint('match');
             setTimeout(() => zone.style.animation = '', 500);
           }
         });
@@ -1305,7 +2491,8 @@
       renderSequenceGame();
     }
     function renderSequenceGame() {
-      const numbers = Array.from({length: 10}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+      const maxNum = getMaxNumber();
+      const numbers = Array.from({length: maxNum}, (_, i) => i + 1).sort(() => Math.random() - 0.5);
       let html = `
         <div class="top-bar">
           <button class="back-btn" onclick="showHome()">← 返回</button>
@@ -1314,9 +2501,9 @@
         </div>
         <div class="sequence-container">
           <div class="sequence-display">
-            <div class="sequence-hint">按顺序点击数字：1 → 2 → 3...</div>
+            <div class="sequence-hint">按顺序点击数字：1 → 2 → 3... → ${maxNum}</div>
             <div class="sequence-progress">
-              ${Array.from({length: 10}, (_, i) => `
+              ${Array.from({length: maxNum}, (_, i) => `
                 <div class="sequence-dot ${i < sequenceState.currentNumber - 1 ? 'completed' : ''} ${i === sequenceState.currentNumber - 1 ? 'active' : ''}">
                   ${i < sequenceState.currentNumber - 1 ? '✓' : i + 1}
                 </div>
@@ -1349,45 +2536,74 @@
         speakNumber(num);
         ProgressManager.addStars(1);
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
-        if (sequenceState.currentNumber > 10) {
+        const maxNum = getMaxNumber();
+        if (sequenceState.currentNumber > maxNum) {
           setTimeout(() => showSequenceComplete(), 1000);
         } else {
           showEncouragement(() => renderSequenceGame());
         }
       } else {
         bubble.classList.add('wrong');
+        showGentleHint('sequence');
         setTimeout(() => bubble.classList.remove('wrong'), 500);
       }
     }
 
-    // 游戏4: 趣味加法
-    const ADD_THEMES = {
+    // 游戏主题系统（所有游戏共享）
+    const GAME_THEMES = {
       animals: {
         name: '小动物',
         items: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵'],
-        stories: ['小狗在草地上玩耍', '小猫咪在晒太阳', '小兔子在吃胡萝卜', '小熊在找蜂蜜', '小猴子在爬树']
+        stories: ['小狗在草地上玩耍', '小猫咪在晒太阳', '小兔子在吃胡萝卜', '小熊在找蜂蜜', '小猴子在爬树'],
+        bgColors: ['#FFE4E1', '#FFF0F5', '#F0FFF0', '#FFF8DC', '#F5F5DC']
       },
       fruits: {
         name: '水果',
         items: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🍍', '🥝', '🥑'],
-        stories: ['果园里的苹果熟了', '水果摊上有好多水果', '小熊在挑选水果', '小兔子最爱吃水果', '水果派对开始啦']
+        stories: ['果园里的苹果熟了', '水果摊上有好多水果', '小熊在挑选水果', '小兔子最爱吃水果', '水果派对开始啦'],
+        bgColors: ['#FFE4E1', '#FFFACD', '#F0FFF0', '#FFE4B5', '#F5F5DC']
       },
       vehicles: {
         name: '交通工具',
         items: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🛵', '🚲'],
-        stories: ['马路上车来车往', '停车场停满了车', '玩具车大集合', '汽车比赛开始了', '交通工具展览会']
+        stories: ['马路上车来车往', '停车场停满了车', '玩具车大集合', '汽车比赛开始了', '交通工具展览会'],
+        bgColors: ['#E6E6FA', '#B0E0E6', '#ADD8E6', '#87CEEB', '#F0F8FF']
       },
       food: {
         name: '美食',
         items: ['🍔', '🍕', '🌭', '🥪', '🌮', '🌯', '🥙', '🧆', '🥚', '🍳', '🥘', '🍲', '🥗', '🍿', '🧈'],
-        stories: ['餐厅里有很多美食', '野餐篮里装满了食物', '美食节开始了', '大厨做了很多好吃的', '美食大拼盘']
+        stories: ['餐厅里有很多美食', '野餐篮里装满了食物', '美食节开始了', '大厨做了很多好吃的', '美食大拼盘'],
+        bgColors: ['#FFEFD5', '#FFE4B5', '#FFEBCD', '#F5DEB3', '#FFF8DC']
       },
       toys: {
         name: '玩具',
         items: ['🧸', '🎈', '🎎', '🎏', '🎐', '🪁', '🎨', '🎭', '🎪', '🎯', '🎲', '🎰', '🎳', '🏓', '⚽'],
-        stories: ['玩具箱里有好多玩具', '玩具店开张了', '小朋友在分享玩具', '玩具派对开始了', '玩具大集合']
+        stories: ['玩具箱里有好多玩具', '玩具店开张了', '小朋友在分享玩具', '玩具派对开始了', '玩具大集合'],
+        bgColors: ['#FFF0F5', '#E6E6FA', '#F0FFFF', '#F5F5DC', '#FFFACD']
+      },
+      nature: {
+        name: '自然',
+        items: ['🌸', '🌺', '🌻', '🌷', '🌹', '🌿', '🍀', '🌲', '🌳', '🌴', '🌵', '🌾', '🌰', '🍄', '🌼'],
+        stories: ['花园里开满了花', '森林里有很多树', '大自然真美丽', '小蜜蜂在采蜜', '春天来了'],
+        bgColors: ['#F0FFF0', '#E8F5E9', '#C8E6C9', '#A5D6A7', '#DCEDC8']
+      },
+      space: {
+        name: '太空',
+        items: ['🚀', '🛸', '🛰️', '🌟', '⭐', '🌙', '☀️', '🌍', '🌎', '🌏', '☄️', '👽', '🌌', '🔭', '🌑'],
+        stories: ['火箭飞向太空', '宇航员在太空漫步', '星星在闪烁', '探索宇宙的奥秘', '太空旅行开始了'],
+        bgColors: ['#E8EAF6', '#C5CAE9', '#BBDEFB', '#B3E5FC', '#E1F5FE']
       }
     };
+
+    // 获取随机主题
+    function getRandomTheme() {
+      const themeKeys = Object.keys(GAME_THEMES);
+      const themeKey = themeKeys[Math.floor(Math.random() * themeKeys.length)];
+      return { key: themeKey, ...GAME_THEMES[themeKey] };
+    }
+
+    // 游戏4: 趣味加法（使用共享主题）
+    const ADD_THEMES = GAME_THEMES;
 
     let addState = { 
       num1: 0, num2: 0, answer: 0, options: [], score: 0, round: 0,
@@ -1411,18 +2627,20 @@
       // 随机选择物品图标
       addState.itemIcon = addState.currentTheme.items[Math.floor(Math.random() * addState.currentTheme.items.length)];
       
-      // 生成数字（1-5 + 1-5，确保不超过10）
-      addState.num1 = Math.floor(Math.random() * 5) + 1;
-      addState.num2 = Math.floor(Math.random() * 5) + 1;
+      // 根据难度生成数字
+      const maxNum = getMaxNumber();
+      const halfMax = Math.floor(maxNum / 2);
+      addState.num1 = Math.floor(Math.random() * halfMax) + 1;
+      addState.num2 = Math.floor(Math.random() * halfMax) + 1;
       addState.answer = addState.num1 + addState.num2;
       addState.counted1 = 0;
       addState.counted2 = 0;
       addState.totalCounted = 0;
-      
-      // 生成错误答案
+
+      // 生成错误答案（根据难度范围）
       const wrongAnswers = [];
       while (wrongAnswers.length < 2) {
-        const wrong = Math.floor(Math.random() * 10) + 1;
+        const wrong = Math.floor(Math.random() * maxNum) + 1;
         if (wrong !== addState.answer && !wrongAnswers.includes(wrong)) wrongAnswers.push(wrong);
       }
       addState.options = [addState.answer, ...wrongAnswers].sort(() => Math.random() - 0.5);
@@ -1539,13 +2757,13 @@
           card.classList.add('wrong');
         }
       });
-      
+
       if (selected === addState.answer) {
         addState.score++;
         addState.round++;
         document.getElementById('game-stars').textContent = addState.score;
         ProgressManager.addStars(1);
-        
+
         // 播放答案
         setTimeout(() => {
           const utterance = new SpeechSynthesisUtterance(`${addState.num1}加${addState.num2}等于${addState.answer}`);
@@ -1553,21 +2771,24 @@
           utterance.rate = 0.8;
           speechSynthesis.speak(utterance);
         }, 300);
-        
+
         showStarAnimation(window.innerWidth / 2, window.innerHeight / 2);
-        
+
         if (addState.round < 5) {
           showEncouragement(() => renderAddGame());
         } else {
           setTimeout(() => showAddComplete(), 1000);
         }
       } else {
+        // 显示温和的错误提示
+        showGentleHint('add', `不对哦，${addState.num1} + ${addState.num2} = ${addState.answer}`);
+
         setTimeout(() => {
           cards.forEach(card => {
             card.classList.remove('wrong', 'correct');
             card.style.pointerEvents = 'auto';
           });
-        }, 1500);
+        }, 2000);
       }
     }
 
@@ -1575,7 +2796,14 @@
     function showMatchComplete() {
       const progress = ProgressManager.load();
       progress.completedGames++;
+      // 记录游戏历史
+      if (!progress.gameHistory) progress.gameHistory = {};
+      progress.gameHistory.match = true;
+      // 困难模式标记
+      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
+      // 检查成就
+      AchievementSystem.checkAchievements();
       document.getElementById('game-content').innerHTML = `
         <div class="complete-container">
           <div class="complete-emoji">🎯</div>
@@ -1588,12 +2816,19 @@
     function showSequenceComplete() {
       const progress = ProgressManager.load();
       progress.completedGames++;
+      // 记录游戏历史
+      if (!progress.gameHistory) progress.gameHistory = {};
+      progress.gameHistory.sequence = true;
+      // 困难模式标记
+      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
+      // 检查成就
+      AchievementSystem.checkAchievements();
       document.getElementById('game-content').innerHTML = `
         <div class="complete-container">
           <div class="complete-emoji">🔗</div>
           <h2 class="complete-title" style="color: var(--color-green);">接龙高手！</h2>
-          <p class="complete-desc">你按顺序数完了1到10！</p>
+          <p class="complete-desc">你按顺序数完了1到${getMaxNumber()}！</p>
           <button class="back-btn" onclick="showHome()">返回首页</button>
         </div>
       `;
@@ -1601,7 +2836,14 @@
     function showAddComplete() {
       const progress = ProgressManager.load();
       progress.completedGames++;
+      // 记录游戏历史
+      if (!progress.gameHistory) progress.gameHistory = {};
+      progress.gameHistory.add = true;
+      // 困难模式标记
+      if (currentDifficulty === 'hard') progress.hardModeCompleted = true;
       ProgressManager.save(progress);
+      // 检查成就
+      AchievementSystem.checkAchievements();
       document.getElementById('game-content').innerHTML = `
         <div class="complete-container">
           <div class="complete-emoji">➕</div>
@@ -1615,10 +2857,26 @@
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
       ProgressManager.updateDisplay();
-      
+
+      // 渲染成就列表
+      document.getElementById('achievement-list').innerHTML = AchievementSystem.renderAchievementPanel();
+      document.getElementById('achievement-unlocked').textContent = AchievementSystem.getUnlockedCount();
+      document.getElementById('achievement-total').textContent = AchievementSystem.getTotalCount();
+
+      // 加载保存的难度设置
+      loadDifficulty();
+
+      // 加载音效设置
+      SFXManager.loadSettings();
+      document.getElementById('sfx-volume').value = SFXManager.volume * 100;
+
+      // 加载背景音乐设置（但不自动播放，等待用户交互）
+      BGMManager.loadSettings();
+      BGMManager.updateUI();
+
       // 初始化音频系统
       initAudio();
-      
+
       // 解锁音频 - 需要用户交互（安卓WebView要求）
       const unlockAudio = function() {
         initAudio();
@@ -1626,13 +2884,18 @@
           audioContext.resume();
         }
         audioUnlocked = true;
-        
+
         // 播放测试音确认音频已解锁
         setTimeout(() => {
           playBeep(800, 50);
         }, 100);
+
+        // 如果之前设置为播放，则启动背景音乐
+        if (BGMManager.isPlaying) {
+          BGMManager.start();
+        }
       };
-      
+
       // 监听各种用户交互事件
       document.addEventListener('touchstart', unlockAudio, { once: true, passive: true });
       document.addEventListener('click', unlockAudio, { once: true });
