@@ -787,6 +787,19 @@
       }
     }
     
+    // 数字到中文的映射
+    const numberToChinese = {
+      0: '零', 1: '一', 2: '二', 3: '三', 4: '四',
+      5: '五', 6: '六', 7: '七', 8: '八', 9: '九', 10: '十',
+      11: '十一', 12: '十二', 13: '十三', 14: '十四', 15: '十五',
+      16: '十六', 17: '十七', 18: '十八', 19: '十九', 20: '二十'
+    };
+    
+    // 获取中文数字
+    function getChineseNumber(num) {
+      return numberToChinese[num] || String(num);
+    }
+    
     // 语音播报（兼容安卓WebView）
     function speakNumber(num) {
       // 先播放音效提示
@@ -798,20 +811,46 @@
           // 取消之前的语音
           window.speechSynthesis.cancel();
           
-          const utterance = new SpeechSynthesisUtterance(String(num));
-          utterance.lang = 'zh-CN';
-          utterance.rate = 0.9;
-          utterance.volume = 1;
-          utterance.pitch = 1.1;
+          // 获取可用的语音列表
+          let voices = window.speechSynthesis.getVoices();
           
-          // 安卓WebView需要延迟播放
-          setTimeout(() => {
-            window.speechSynthesis.speak(utterance);
-          }, 100);
+          // 如果没有语音，尝试异步加载
+          if (voices.length === 0) {
+            window.speechSynthesis.onvoiceschanged = function() {
+              voices = window.speechSynthesis.getVoices();
+              doSpeak(num, voices);
+            };
+            // 触发加载
+            window.speechSynthesis.getVoices();
+          } else {
+            doSpeak(num, voices);
+          }
         } catch (e) {
           console.log('Speech synthesis failed:', e);
         }
       }
+    }
+    
+    // 实际执行语音播报
+    function doSpeak(num, voices) {
+      const chineseNum = getChineseNumber(num);
+      const utterance = new SpeechSynthesisUtterance(chineseNum);
+      
+      // 尝试找到中文语音
+      const zhVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('cmn'));
+      if (zhVoice) {
+        utterance.voice = zhVoice;
+      }
+      
+      utterance.lang = 'zh-CN';
+      utterance.rate = 0.8;
+      utterance.volume = 1;
+      utterance.pitch = 1;
+      
+      // 安卓WebView需要延迟播放
+      setTimeout(() => {
+        window.speechSynthesis.speak(utterance);
+      }, 50);
     }
 
     // 触摸事件工具函数
