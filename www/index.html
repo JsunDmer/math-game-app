@@ -761,6 +761,27 @@
         audioContext.resume();
       }
       audioUnlocked = true;
+      
+      // 预加载TTS语音列表（华为/讯飞需要）
+      if ('speechSynthesis' in window) {
+        // 强制加载语音列表
+        const voices = window.speechSynthesis.getVoices();
+        console.log('Available voices:', voices.length);
+        voices.forEach((v, i) => {
+          console.log(`Voice ${i}:`, v.name, v.lang);
+        });
+        
+        // 如果列表为空，监听加载事件
+        if (voices.length === 0) {
+          window.speechSynthesis.onvoiceschanged = function() {
+            const loadedVoices = window.speechSynthesis.getVoices();
+            console.log('Voices loaded:', loadedVoices.length);
+            loadedVoices.forEach((v, i) => {
+              console.log(`Voice ${i}:`, v.name, v.lang);
+            });
+          };
+        }
+      }
     }
     
     // 播放音效（使用Web Audio API，兼容安卓WebView）
@@ -836,21 +857,56 @@
       const chineseNum = getChineseNumber(num);
       const utterance = new SpeechSynthesisUtterance(chineseNum);
       
-      // 尝试找到中文语音
-      const zhVoice = voices.find(v => v.lang.includes('zh') || v.lang.includes('cmn'));
-      if (zhVoice) {
-        utterance.voice = zhVoice;
+      // 尝试找到中文语音（兼容华为、讯飞等国产引擎）
+      let zhVoice = null;
+      
+      // 优先查找中文语音
+      zhVoice = voices.find(v => {
+        const lang = (v.lang || '').toLowerCase();
+        const name = (v.name || '').toLowerCase();
+        // 匹配中文语言代码
+        return lang.includes('zh') || 
+               lang.includes('cmn') || 
+               lang.includes('cn') ||
+               // 匹配华为语音引擎
+               name.includes('华为') ||
+               name.includes('huawei') ||
+               // 匹配讯飞语音引擎
+               name.includes('讯飞') ||
+               name.includes('ifly') ||
+               name.includes('xfyun') ||
+               // 匹配其他中文引擎
+               name.includes('中文') ||
+               name.includes('chinese');
+      });
+      
+      // 如果没找到中文语音，使用第一个可用的
+      if (!zhVoice && voices.length > 0) {
+        zhVoice = voices[0];
       }
       
+      if (zhVoice) {
+        utterance.voice = zhVoice;
+        console.log('Using voice:', zhVoice.name, zhVoice.lang);
+      } else {
+        console.log('No voice available');
+      }
+      
+      // 国产引擎可能需要不同的语言设置
       utterance.lang = 'zh-CN';
-      utterance.rate = 0.8;
+      utterance.rate = 1.0;  // 华为/讯飞用正常语速
       utterance.volume = 1;
       utterance.pitch = 1;
+      
+      // 添加事件监听
+      utterance.onstart = () => console.log('Speech started');
+      utterance.onend = () => console.log('Speech ended');
+      utterance.onerror = (e) => console.log('Speech error:', e);
       
       // 安卓WebView需要延迟播放
       setTimeout(() => {
         window.speechSynthesis.speak(utterance);
-      }, 50);
+      }, 100);
     }
 
     // 触摸事件工具函数
