@@ -1,20 +1,26 @@
 {
-  "appId": "com.aikids.mathgame",
-  "appName": "数字乐园",
+  "appId": "com.aikids.learning",
+  "appName": "LearningParadise",
   "webDir": "www",
   "bundledWebRuntime": false,
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 2000,
       "launchAutoHide": true,
-      "backgroundColor": "#F5F7FA",
+      "backgroundColor": "#FFF9F0",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP"
+    },
+    "TextToSpeech": {
+      "language": "en-US",
+      "rate": 0.8,
+      "pitch": 1.2
     }
   },
   "android": {
     "allowMixedContent": true,
     "captureInput": true,
-    "webContentsDebuggingEnabled": false
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#FFF9F0"
   }
 }

@@ -3,19 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>🔢 数字乐园</title>
+  <meta name="theme-color" content="#FF6B9D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>🌈 Learning Paradise</title>
   <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+<<<<<<< Updated upstream
   <script src="capacitor.js"></script>
+=======
+  <link rel="stylesheet" href="styles/design-system.css">
+>>>>>>> Stashed changes
   <style>
-    :root {
-      --color-blue: #4A90E2;
-      --color-orange: #F5A623;
-      --color-green: #7ED321;
-      --color-red: #D0021B;
-      --color-purple: #9013FE;
-      --color-bg: #F5F7FA;
-      --color-text: #2C3E50;
+    /* App-specific styles */
+    .home-page {
+      padding: 40px 20px;
+      padding-bottom: 100px;
     }
+<<<<<<< Updated upstream
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'ZCOOL KuaiLe', system-ui, sans-serif;
@@ -198,10 +202,42 @@
       padding: 16px;
       background: linear-gradient(135deg, #FFF9E6 0%, #FFE5B4 100%);
       border-radius: 12px;
+=======
+
+    .home-title {
+      font-size: 48px;
+      background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      text-shadow: none;
+    }
+
+    .home-subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      margin-top: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-icon {
+      font-size: 28px;
+>>>>>>> Stashed changes
     }
     .favorite-title { font-size: 14px; color: #666; margin-bottom: 8px; }
     .favorite-game { font-size: 20px; font-weight: bold; color: #333; }
 
+<<<<<<< Updated upstream
     /* 游戏页面 */
     .game-page { padding: 0; }
     .top-bar {
@@ -336,8 +372,30 @@
       height: 60px;
       background: white;
       border-radius: 12px;
+=======
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .game-page {
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+
+    .settings-page {
+      padding: 20px;
+      padding-bottom: 100px;
+    }
+
+    .setting-item {
+>>>>>>> Stashed changes
       display: flex;
+      justify-content: space-between;
       align-items: center;
+<<<<<<< Updated upstream
       justify-content: center;
       font-size: 28px;
       cursor: pointer;
@@ -466,12 +524,59 @@
       font-size: 18px;
       z-index: 2000;
       animation: popIn 0.3s;
+=======
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+    }
+
+    .setting-label {
+      font-size: 18px;
+      color: var(--text-primary);
+    }
+
+    .toggle-switch {
+      width: 52px;
+      height: 28px;
+      background: #ccc;
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .toggle-switch.active {
+      background: var(--success);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      width: 24px;
+      height: 24px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: var(--transition-fast);
+    }
+
+    .toggle-switch.active::after {
+      left: 26px;
+    }
+
+    /* Bottom Tab Bar */
+    body {
+      padding-bottom: 80px;
+>>>>>>> Stashed changes
     }
   </style>
 </head>
 <body>
-  <div class="game-container">
+  <div id="app">
     <!-- 首页 -->
+<<<<<<< Updated upstream
     <div id="home-page" class="home-page visible">
       <h1 class="home-title">🔢 数字乐园</h1>
       <p class="home-subtitle">和数字做朋友，一起快乐学习！</p>
@@ -507,10 +612,39 @@
         <div class="progress-item">
           <div class="progress-value">🎮 <span id="completed-count">0</span></div>
           <div class="progress-label">通关次数</div>
+=======
+    <div id="home-page" class="page home-page active">
+      <div class="game-container">
+        <h1 class="home-title">🌈 Learning Paradise</h1>
+        <p class="home-subtitle">选择你喜欢的游戏开始学习吧！</p>
+
+        <!-- 英语学习区 -->
+        <h2 class="section-title"><span class="section-icon">🔤</span> 英语学习</h2>
+        <div class="game-grid" id="english-games">
+          <!-- Dynamically loaded -->
         </div>
-        <div class="progress-item">
-          <div class="progress-value">🔢 <span id="numbers-count">0</span></div>
-          <div class="progress-label">掌握数字</div>
+
+        <!-- 数学练习区 -->
+        <h2 class="section-title"><span class="section-icon">🔢</span> 数学练习</h2>
+        <div class="game-grid" id="math-games">
+          <!-- Dynamically loaded -->
+>>>>>>> Stashed changes
+        </div>
+
+        <!-- 进度面板 -->
+        <div class="progress-panel mt-lg">
+          <div class="progress-item">
+            <div class="progress-value">⭐ <span id="stars-count">0</span></div>
+            <div class="progress-label">星星总数</div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-value">🎯 <span id="completed-count">0</span></div>
+            <div class="progress-label">通关次数</div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-value">📚 <span id="words-count">0</span></div>
+            <div class="progress-label">学习单词</div>
+          </div>
         </div>
       </div>
     </div>
@@ -573,9 +707,10 @@
     </div>
 
     <!-- 游戏页面 -->
-    <div id="game-page" class="game-page hidden">
-      <div id="game-content"></div>
+    <div id="game-page" class="page game-page">
+      <div id="game-content" class="game-container"></div>
     </div>
+<<<<<<< Updated upstream
   </div>
 
   <!-- 底部Tab栏 -->
@@ -1152,5 +1287,61 @@
       document.addEventListener('click', unlockAudio, { once: true });
     });
   </script>
+=======
+
+    <!-- 设置页面 -->
+    <div id="settings-page" class="page settings-page">
+      <div class="game-container">
+        <h1 class="home-title mb-md">⚙️ 设置</h1>
+
+        <div class="setting-item">
+          <span class="setting-label">🔊 声音效果</span>
+          <div class="toggle-switch active" id="toggle-sound" onclick="toggleSound()"></div>
+        </div>
+
+        <div class="setting-item">
+          <span class="setting-label">🎵 背景音乐</span>
+          <div class="toggle-switch" id="toggle-music" onclick="toggleMusic()"></div>
+        </div>
+
+        <div class="setting-item">
+          <span class="setting-label">📖 关于</span>
+          <span class="body-md">Learning Paradise v1.0</span>
+        </div>
+
+        <button class="btn btn-secondary mt-lg" onclick="showHome()" style="width: 100%;">
+          返回首页
+        </button>
+      </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-tab-bar">
+      <button class="tab-btn" onclick="showHome()">
+        <span class="icon">🏠</span>
+        <span class="label">首页</span>
+      </button>
+      <button class="tab-btn" onclick="showSettings()">
+        <span class="icon">⚙️</span>
+        <span class="label">设置</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="js/core/progress-manager.js"></script>
+  <script src="js/core/voice-manager.js"></script>
+  <script src="js/core/audio-manager.js"></script>
+  <script src="js/games/english/letters-match.js"></script>
+  <script src="js/games/english/word-select.js"></script>
+  <script src="js/games/english/listen-identify.js"></script>
+  <script src="js/games/english/letter-sort.js"></script>
+  <script src="js/games/english/word-puzzle.js"></script>
+  <script src="js/games/english/letter-center.js"></script>
+  <script src="js/games/math/counting.js"></script>
+  <script src="js/games/math/number-match.js"></script>
+  <script src="js/games/math/number-sort.js"></script>
+  <script src="js/games/math/addition.js"></script>
+  <script src="js/app.js"></script>
+>>>>>>> Stashed changes
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">数字乐园</string>
-    <string name="title_activity_main">数字乐园</string>
-    <string name="package_name">com.aikids.mathgame</string>
-    <string name="custom_url_scheme">com.aikids.mathgame</string>
+    <string name="app_name">Learning Paradise</string>
+    <string name="title_activity_main">Learning Paradise</string>
+    <string name="package_name">com.aikids.learning</string>
+    <string name="custom_url_scheme">com.aikids.learning</string>
 </resources>

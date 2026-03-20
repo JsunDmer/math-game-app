@@ -19,9 +19,12 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: math-game-app/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          cd math-game-app
+          npm ci
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
@@ -33,16 +36,19 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Sync Capacitor
-        run: npx cap sync android
+        run: |
+          cd math-game-app
+          npx cap sync android
 
       - name: Grant execute permission for gradlew
-        run: chmod +x android/gradlew
+        run: chmod +x math-game-app/android/gradlew
 
       - name: Build with Gradle
-        run: cd android && ./gradlew assembleDebug --no-daemon
+        run: cd math-game-app/android && ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: learning-paradise-debug
+          path: math-game-app/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 7

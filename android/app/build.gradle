@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace "com.aikids.mathgame"
+    namespace "com.aikids.learning"
     compileSdk rootProject.ext.compileSdkVersion
-    
+
     defaultConfig {
-        applicationId "com.aikids.mathgame"
+        applicationId "com.aikids.learning"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
@@ -17,15 +17,14 @@ android {
              ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            // 签名配置将在GitHub Actions中设置
         }
     }
-    
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
