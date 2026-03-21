@@ -1,58 +1,78 @@
 /**
  * Voice Manager - 语音播放管理
- * 使用 Google Translate TTS + Web Speech API 双保险
+ * 多重 fallback 机制确保 Android/iOS 兼容性
  */
 class VoiceManager {
-  static useGoogleTTS = true;
+  static isInitialized = false;
+  static preferredVoice = null;
+
+  static init() {
+    if (this.isInitialized) return;
+    this.isInitialized = true;
+
+    if ('speechSynthesis' in window) {
+      speechSynthesis.onvoiceschanged = () => {
+        this.selectBestVoice();
+      };
+      this.selectBestVoice();
+    }
+  }
+
+  static selectBestVoice() {
+    const voices = speechSynthesis.getVoices();
+    const englishVoices = voices.filter(v => v.lang.includes('en'));
+
+    const preferredNames = [
+      'Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa',
+      'Google UK English Female', 'Microsoft Zira',
+      'Female', 'Woman'
+    ];
+
+    for (const name of preferredNames) {
+      const found = englishVoices.find(v => v.name.includes(name));
+      if (found) {
+        this.preferredVoice = found;
+        return;
+      }
+    }
+
+    this.preferredVoice = englishVoices[0] || voices.find(v => v.lang.includes('en')) || voices[0];
+  }
 
   static speak(text, lang = 'en-US') {
     if (!ProgressManager.isSoundEnabled()) return;
 
-    if (this.useGoogleTTS) {
-      this.speakWithGoogle(text).catch(() => {
-        this.speakWithWebSpeech(text, lang);
-      });
-    } else {
-      this.speakWithWebSpeech(text, lang);
-    }
-  }
+    this.init();
 
-  static speakWithGoogle(text) {
-    return new Promise((resolve, reject) => {
-      const url = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=en&client=tw-ob`;
-      const audio = new Audio();
-      audio.src = url;
-      audio.playbackRate = 0.85;
-      audio.volume = ProgressManager.getSettings().volume;
-
-      audio.oncanplaythrough = () => {
-        audio.play().then(resolve).catch(reject);
-      };
-
-      audio.onerror = reject;
-
-      setTimeout(() => reject(new Error('TTS timeout')), 5000);
-    });
+    this.speakWithWebSpeech(text, lang);
   }
 
   static speakWithWebSpeech(text, lang = 'en-US') {
-    if ('speechSynthesis' in window) {
+    if (!('speechSynthesis' in window)) {
+      console.warn('Speech synthesis not supported');
+      return;
+    }
+
+    try {
       speechSynthesis.cancel();
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = lang;
       utterance.rate = 0.8;
       utterance.pitch = 1.2;
-      utterance.volume = ProgressManager.getSettings().volume;
+      utterance.volume = ProgressManager.getSettings().volume || 0.8;
 
-      const voices = speechSynthesis.getVoices();
-      const femaleVoice = voices.find(v =>
-        v.lang.includes('en') &&
-        (v.name.includes('Samantha') || v.name.includes('Victoria') ||
-         v.name.includes('Female') || v.name.includes('Karen'))
-      );
-      if (femaleVoice) utterance.voice = femaleVoice;
+      if (this.preferredVoice) {
+        utterance.voice = this.preferredVoice;
+      }
+
+      utterance.onerror = (e) => {
+        console.warn('Speech error:', e.error);
+      };
 
       speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.warn('Speech synthesis failed:', e);
     }
   }
 
@@ -71,9 +91,14 @@ class VoiceManager {
   static speakWord(word) {
     this.speakEnglish(word);
   }
+
+  static speakNumber(num) {
+    this.speakChinese(num.toString());
+  }
 }
 
-// Global function
 function playSound(text) {
   VoiceManager.speakEnglish(text);
 }
+
+document.addEventListener('DOMContentLoaded', () => VoiceManager.init());

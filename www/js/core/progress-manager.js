@@ -1,8 +1,11 @@
 /**
  * Progress Manager - 用户进度管理
+ * 增强错误处理，支持 localStorage 不可用的情况
  */
 class ProgressManager {
   static STORAGE_KEY = 'learning-paradise-progress';
+  static memoryStorage = null;
+  static isLocalStorageAvailable = null;
 
   static defaultProgress = {
     stars: 0,
@@ -17,10 +20,32 @@ class ProgressManager {
     }
   };
 
+  static checkLocalStorage() {
+    if (this.isLocalStorageAvailable !== null) {
+      return this.isLocalStorageAvailable;
+    }
+
+    try {
+      const testKey = '__test__';
+      localStorage.setItem(testKey, testKey);
+      localStorage.removeItem(testKey);
+      this.isLocalStorageAvailable = true;
+    } catch (e) {
+      console.warn('localStorage not available, using memory storage');
+      this.isLocalStorageAvailable = false;
+    }
+
+    return this.isLocalStorageAvailable;
+  }
+
   static load() {
     try {
-      const saved = localStorage.getItem(this.STORAGE_KEY);
-      return saved ? JSON.parse(saved) : { ...this.defaultProgress };
+      if (this.checkLocalStorage()) {
+        const saved = localStorage.getItem(this.STORAGE_KEY);
+        return saved ? JSON.parse(saved) : { ...this.defaultProgress };
+      } else {
+        return this.memoryStorage || { ...this.defaultProgress };
+      }
     } catch (e) {
       console.warn('Failed to load progress:', e);
       return { ...this.defaultProgress };
@@ -29,9 +54,14 @@ class ProgressManager {
 
   static save(progress) {
     try {
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(progress));
+      if (this.checkLocalStorage()) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(progress));
+      } else {
+        this.memoryStorage = progress;
+      }
     } catch (e) {
       console.warn('Failed to save progress:', e);
+      this.memoryStorage = progress;
     }
   }
 
@@ -94,21 +124,43 @@ class ProgressManager {
   }
 
   static isSoundEnabled() {
-    return this.getSettings().soundEnabled;
+    try {
+      return this.getSettings().soundEnabled;
+    } catch (e) {
+      return true;
+    }
   }
 
   static isBgMusicEnabled() {
-    return this.getSettings().bgMusicEnabled;
+    try {
+      return this.getSettings().bgMusicEnabled;
+    } catch (e) {
+      return false;
+    }
   }
 
   static reset() {
-    localStorage.removeItem(this.STORAGE_KEY);
+    try {
+      if (this.checkLocalStorage()) {
+        localStorage.removeItem(this.STORAGE_KEY);
+      }
+      this.memoryStorage = null;
+    } catch (e) {
+      console.warn('Failed to reset progress:', e);
+    }
   }
 }
 
-// Global function for HTML onclick
 function updateProgressDisplay() {
-  document.getElementById('stars-count').textContent = ProgressManager.getStars();
-  document.getElementById('completed-count').textContent = ProgressManager.getCompletedGamesCount();
-  document.getElementById('words-count').textContent = ProgressManager.getWordsLearned();
+  try {
+    const starsEl = document.getElementById('stars-count');
+    const completedEl = document.getElementById('completed-count');
+    const wordsEl = document.getElementById('words-count');
+
+    if (starsEl) starsEl.textContent = ProgressManager.getStars();
+    if (completedEl) completedEl.textContent = ProgressManager.getCompletedGamesCount();
+    if (wordsEl) wordsEl.textContent = ProgressManager.getWordsLearned();
+  } catch (e) {
+    console.warn('Failed to update progress display:', e);
+  }
 }

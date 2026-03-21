@@ -25,6 +25,7 @@ class CountingGame {
   static render() {
     this.score = 0;
     this.currentRound = 0;
+    this.initRound();
 
     return `
       <div class="top-bar">
@@ -148,6 +149,3 @@ class CountingGame {
     }
   }
 }
-
-// Auto initialize
-CountingGame.initRound();
