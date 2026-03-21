@@ -7,7 +7,7 @@ class LettersMatchGame {
   static score = 0;
   static totalAttempts = 0;
   static matchedPairs = 0;
-  static totalPairs = 6;
+  static totalPairs = 4;
 
   static words = [
     { word: 'APPLE', letter: 'A', emoji: '🍎' },
@@ -23,7 +23,7 @@ class LettersMatchGame {
     this.matchedPairs = 0;
     this.totalAttempts = 0;
 
-    const shuffledWords = [...this.words].sort(() => Math.random() - 0.5).slice(0, 6);
+    const shuffledWords = [...this.words].sort(() => Math.random() - 0.5).slice(0, 4);
     const shuffledLetters = shuffledWords.map(w => w.letter).sort(() => Math.random() - 0.5);
 
     return `
@@ -99,7 +99,7 @@ class LettersMatchGame {
     e.currentTarget.classList.remove('drag-over');
   }
 
-  static handleDrop(e) {
+  static async handleDrop(e) {
     e.preventDefault();
     const dropZone = e.currentTarget;
     dropZone.classList.remove('drag-over');
@@ -107,7 +107,7 @@ class LettersMatchGame {
     const draggedLetter = e.dataTransfer.getData('text/plain');
     const targetLetter = dropZone.dataset.letter;
 
-    this.checkMatch(draggedLetter, targetLetter, dropZone);
+    await this.checkMatch(draggedLetter, targetLetter, dropZone);
   }
 
   static handleTouchStart(e) {
@@ -135,7 +135,7 @@ class LettersMatchGame {
     });
   }
 
-  static handleTouchEnd(e) {
+  static async handleTouchEnd(e) {
     const target = e.currentTarget;
     target.classList.remove('dragging');
 
@@ -155,11 +155,11 @@ class LettersMatchGame {
     if (matchedZone) {
       const draggedLetter = target.dataset.letter;
       const targetLetter = matchedZone.dataset.letter;
-      this.checkMatch(draggedLetter, targetLetter, matchedZone);
+      await this.checkMatch(draggedLetter, targetLetter, matchedZone);
     }
   }
 
-  static checkMatch(draggedLetter, targetLetter, dropZone) {
+  static async checkMatch(draggedLetter, targetLetter, dropZone) {
     this.totalAttempts++;
 
     if (draggedLetter === targetLetter) {
@@ -173,7 +173,7 @@ class LettersMatchGame {
       this.score += 10;
 
       AudioManager.playCorrect();
-      VoiceManager.speakLetter(draggedLetter);
+      await LetterAudioManager.speakLetterName(draggedLetter);
 
       document.getElementById('score').textContent = this.score;
       document.getElementById('matched-count').textContent = this.matchedPairs;

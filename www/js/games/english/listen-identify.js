@@ -77,7 +77,7 @@ class ListenIdentifyGame {
     `).join('');
   }
 
-  static playSound() {
+  static async playSound() {
     if (this.isPlaying) return;
     this.isPlaying = true;
 
@@ -87,7 +87,7 @@ class ListenIdentifyGame {
     btn.classList.add('playing');
     hint.textContent = '播放中...';
 
-    VoiceManager.speakLetter(this.currentLetter);
+    await LetterAudioManager.speakLetterName(this.currentLetter);
 
     setTimeout(() => {
       btn.classList.remove('playing');

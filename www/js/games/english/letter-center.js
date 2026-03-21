@@ -96,9 +96,9 @@ class LetterCenterGame {
     return phonetics[letter] || '';
   }
 
-  static playSound() {
+  static async playSound() {
     const letter = this.letters[this.currentIndex];
-    VoiceManager.speakLetter(letter);
+    await LetterAudioManager.speakLetterName(letter);
   }
 
   static prevLetter() {

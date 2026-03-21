@@ -25,7 +25,18 @@ class CountingGame {
   static render() {
     this.score = 0;
     this.currentRound = 0;
-    this.initRound();
+
+    const item = this.items[Math.floor(Math.random() * this.items.length)];
+    this.currentCount = Math.floor(Math.random() * 9) + 1;
+    this.currentEmoji = item.emoji;
+    const correctAnswer = this.currentCount;
+    const options = this.generateOptions(correctAnswer);
+    const itemsHtml = Array(this.currentCount).fill(0).map(() => `<span class="item">${this.currentEmoji}</span>`).join('');
+    const optionsHtml = options.map(opt => `
+      <button class="option-btn" data-value="${opt}" onclick="CountingGame.checkAnswer(${opt})">
+        ${opt}
+      </button>
+    `).join('');
 
     return `
       <div class="top-bar">
@@ -39,10 +50,10 @@ class CountingGame {
 
         <div class="count-display" id="count-display">
           <div class="count-question">数一数有多少个？</div>
-          <div class="items-container" id="items-container"></div>
+          <div class="items-container" id="items-container">${itemsHtml}</div>
         </div>
 
-        <div class="options-container" id="options-container"></div>
+        <div class="options-container" id="options-container">${optionsHtml}</div>
       </div>
 
       <div class="game-progress">

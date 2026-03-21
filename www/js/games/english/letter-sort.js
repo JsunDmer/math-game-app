@@ -24,7 +24,7 @@ class LetterSortGame {
 
       <div class="game-area">
         <div class="round-info">第 <span id="round-num">1</span> / ${this.totalRounds} 轮</div>
-        <div class="target-sequence" id="target-sequence">
+        <div class="target-sequence">
           目标顺序: ${this.letters.join(' → ')}
         </div>
 
@@ -69,7 +69,7 @@ class LetterSortGame {
 
   static initRound() {
     const startCode = 65 + Math.floor(Math.random() * 20);
-    this.letters = String.fromCharCode(startCode, startCode + 1, startCode + 2, startCode + 3);
+    this.letters = Array.from(String.fromCharCode(startCode, startCode + 1, startCode + 2, startCode + 3));
     this.userSequence = ['', '', '', ''];
   }
 

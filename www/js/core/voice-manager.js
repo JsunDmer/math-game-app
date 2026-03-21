@@ -25,7 +25,14 @@ class VoiceManager {
   static selectBestVoice() {
     try {
       const voices = speechSynthesis.getVoices();
-      const englishVoices = voices.filter(v => v.lang.includes('en'));
+      const englishVoices = voices.filter(v => v.lang.toLowerCase().startsWith('en'));
+
+      const blockedPatterns = [
+        'captain', 'capitano', 'capito',
+        'male', 'man', 'david', 'mark', 'miguel',
+        'tom', 'thomas', 'alex', 'fred', 'bruce', 'ralph',
+        'espeak'
+      ];
 
       const preferredNames = [
         'Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa',
@@ -33,19 +40,33 @@ class VoiceManager {
         'Google US English', 'English'
       ];
 
-      for (const name of preferredNames) {
-        const found = englishVoices.find(v => v.name.includes(name));
-        if (found) {
-          this.preferredVoice = found;
-          console.log('Selected voice:', found.name);
-          return;
-        }
+      const femaleIndicators = ['female', 'woman', 'samantha', 'victoria', 'karen', 'moira', 'tessa', 'zira', 'eva'];
+
+      const scoreVoice = (v) => {
+        const name = v.name.toLowerCase();
+        if (blockedPatterns.some(p => name.includes(p))) return -9999;
+        let score = 0;
+        if (v.lang === 'en-US') score += 100;
+        else if (v.lang.toLowerCase().startsWith('en-us')) score += 90;
+        else if (v.lang.toLowerCase().startsWith('en')) score += 60;
+        if (v.localService) score += 20;
+        const pi = preferredNames.findIndex(t => name.includes(t.toLowerCase()));
+        if (pi >= 0) score += 120 - pi * 2;
+        if (femaleIndicators.some(p => name.includes(p))) score += 12;
+        if (name.includes('google')) score += 10;
+        return score;
+      };
+
+      const scored = englishVoices.map(v => ({ v, s: scoreVoice(v) })).filter(x => x.s > -9999).sort((a, b) => b.s - a.s);
+
+      if (scored.length > 0) {
+        this.preferredVoice = scored[0].v;
+        console.log('Selected voice:', this.preferredVoice.name, this.preferredVoice.lang, 'score=' + scored[0].s);
+        return;
       }
 
-      this.preferredVoice = englishVoices[0] || voices.find(v => v.lang.includes('en')) || voices[0];
-      if (this.preferredVoice) {
-        console.log('Fallback voice:', this.preferredVoice.name);
-      }
+      this.preferredVoice = englishVoices[0] || voices[0];
+      console.log('Fallback voice:', this.preferredVoice?.name || 'none');
     } catch (e) {
       console.warn('Voice selection failed:', e);
     }

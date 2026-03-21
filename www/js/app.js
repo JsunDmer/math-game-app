@@ -23,6 +23,9 @@ let currentGame = null;
 let currentTab = 'english';
 
 function initApp() {
+  if (typeof MusicManager !== 'undefined') {
+    MusicManager.init();
+  }
   renderGameGrids();
   updateProgressDisplay();
   initSettingsToggles();
@@ -95,7 +98,13 @@ function showSettingsTab() {
 
 function showHome() {
   currentGame = null;
-  showEnglishTab();
+  if (currentTab === 'math') {
+    showMathTab();
+  } else if (currentTab === 'settings') {
+    showSettingsTab();
+  } else {
+    showEnglishTab();
+  }
 }
 
 function showSettings() {
@@ -168,22 +177,36 @@ function toggleSound() {
 function toggleMusic() {
   const toggle = document.getElementById('toggle-music');
   const controls = document.getElementById('music-controls');
-  
+
   if (typeof MusicManager === 'undefined') {
     console.warn('MusicManager not loaded');
     return;
   }
-  
+
   const isPlaying = MusicManager.toggle();
-  
+
   toggle.classList.toggle('active', isPlaying);
   controls.style.display = isPlaying ? 'block' : 'none';
-  
+
   if (isPlaying) {
     renderMusicList();
   }
-  
+
   ProgressManager.updateSettings({ bgMusicEnabled: isPlaying });
+}
+
+function selectMusic(index) {
+  if (typeof MusicManager === 'undefined') return;
+
+  MusicManager.selectTrack(index);
+  renderMusicList();
+
+  const toggle = document.getElementById('toggle-music');
+  const controls = document.getElementById('music-controls');
+  toggle.classList.add('active');
+  controls.style.display = 'block';
+
+  ProgressManager.updateSettings({ bgMusicEnabled: true });
 }
 
 function renderMusicList() {
@@ -199,10 +222,17 @@ function renderMusicList() {
   `).join('');
 }
 
-function selectMusic(index) {
-  if (typeof MusicManager === 'undefined') return;
-  MusicManager.selectTrack(index);
-  renderMusicList();
+function renderMusicList() {
+  const list = document.getElementById('music-list');
+  if (!list || typeof MusicManager === 'undefined') return;
+  
+  list.innerHTML = MusicManager.tracks.map((track, i) => `
+    <div class="music-item ${i === MusicManager.currentTrack ? 'active' : ''}" 
+         onclick="selectMusic(${i})">
+      <span class="music-icon">${track.icon}</span>
+      <span class="music-name">${track.name}</span>
+    </div>
+  `).join('');
 }
 
 function setVolume(value) {

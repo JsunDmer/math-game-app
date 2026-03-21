@@ -18,40 +18,61 @@ class NumberMatchGame {
     this.initRound();
 
     return `
-      <div class="top-bar">
-        <button class="back-btn" onclick="showHome()">🏠 返回</button>
-        <span class="game-title-header">数字配对</span>
+      <div class="top-bar" style="padding: 12px 16px; margin-bottom: 12px;">
+        <button class="back-btn" onclick="showHome()" style="padding: 8px 14px; font-size: 14px;">🏠</button>
+        <span class="game-title-header" style="font-size: 20px;">数字配对</span>
         <span class="stars-display">⭐ <span id="score">0</span></span>
       </div>
 
-      <div class="game-area">
-        <div class="round-info">第 <span id="round-num">1</span> / ${this.totalRounds} 轮</div>
-
-        <div class="match-progress">配对成功: <span id="matched-count">0</span>/${this.numbers.length}</div>
+      <div class="match-cards-container">
+        <div class="match-progress" style="font-size: 16px; color: #888; margin-bottom: 12px;">第 <span id="round-num">1</span> / ${this.totalRounds} 轮 · 配对: <span id="matched-count">0</span>/${this.numbers.length}</div>
 
         <div class="cards-grid" id="cards-grid">
           ${this.generateCardsHtml()}
         </div>
       </div>
 
-      <div class="game-progress">
-        <div class="progress-bar">
+      <div class="game-progress" style="padding: 0 12px; margin-top: 16px;">
+        <div class="progress-bar" style="height: 10px;">
           <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
         </div>
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 16px; }
-        .match-progress { font-size: 16px; color: #888; margin-bottom: 16px; }
-        .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 10px; }
-        .card { aspect-ratio: 1; background: white; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.1); transition: all 0.3s; border: 3px solid transparent; min-height: 80px; }
+        .match-cards-container {
+          display: flex;
+          flex-direction: column;
+          height: calc(100vh - 120px);
+          padding: 0 8px;
+        }
+        .cards-grid { 
+          display: grid; 
+          grid-template-columns: repeat(3, 1fr); 
+          gap: 5px; 
+          flex: 1;
+          align-content: start;
+        }
+        .card { 
+          aspect-ratio: 1; 
+          background: white; 
+          border-radius: 6px; 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          font-size: 14px; 
+          font-weight: bold; 
+          cursor: pointer; 
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+          transition: all 0.3s; 
+          border: 2px solid transparent;
+          min-height: 0;
+        }
         .card:active { transform: scale(0.95); }
         .card.flipped { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .card.matched { background: var(--success); color: white; border-color: var(--success); opacity: 0.7; pointer-events: none; }
         @media (min-width: 600px) {
-          .cards-grid { grid-template-columns: repeat(4, 1fr); }
-          .card { min-height: 100px; font-size: 42px; }
+          .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+          .card { font-size: 18px; }
         }
       </style>
     `;
