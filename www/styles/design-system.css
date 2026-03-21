@@ -561,6 +561,14 @@ body {
   }
 }
 
+/* Game Grid */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-top: var(--space-lg);
+}
+
 /* 平板 (600px - 1024px) */
 @media (min-width: 600px) and (max-width: 1024px) {
   .game-grid {

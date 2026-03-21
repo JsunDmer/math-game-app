@@ -4,19 +4,19 @@ class MusicManager {
   static isPlaying = false;
   static volume = 0.5;
   static isReady = false;
+  static playAllMode = false;
 
   static tracks = [
-    { name: 'Happy Piano', url: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3', icon: '🎹' },
-    { name: 'Playful Fun', url: 'https://cdn.pixabay.com/audio/2021/09/06/audio_8c6497b51b.mp3', icon: '🎵' },
-    { name: 'Kids Party', url: 'https://cdn.pixabay.com/audio/2022/10/25/audio_946bc3eb81.mp3', icon: '🎉' },
-    { name: 'Sunny Day', url: 'https://cdn.pixabay.com/audio/2022/02/23/audio_0b83a75c1c.mp3', icon: '☀️' }
+    { name: '欢乐旋律', url: 'audio/happy.mp3', icon: '🎵' },
+    { name: '童趣时光', url: 'audio/playful.mp3', icon: '🎸' },
+    { name: '儿童派对', url: 'audio/kids_party.mp3', icon: '🎉' },
+    { name: '阳光日子', url: 'audio/sunny_day.mp3', icon: '☀️' }
   ];
 
   static init() {
     if (this.audio) return;
 
     this.audio = new Audio();
-    this.audio.loop = true;
     this.audio.volume = this.volume;
     this.audio.crossOrigin = 'anonymous';
 
@@ -24,41 +24,91 @@ class MusicManager {
       console.warn('Music error:', e);
     });
 
-    this.audio.addEventListener('canplaythrough', () => {
-      this.isReady = true;
+    this.audio.addEventListener('ended', () => {
       if (this.isPlaying) {
-        this.audio.play().catch(() => {});
+        if (this.playAllMode) {
+          this.nextTrack();
+        } else {
+          // In single track mode, loop the current track
+          this.audio.currentTime = 0;
+          this.audio.play().catch(e => console.warn('Music replay failed:', e));
+        }
       }
     });
 
+    this.audio.addEventListener('canplaythrough', () => {
+      this.isReady = true;
+    });
+
     this.loadProgress();
-    this.audio.src = this.tracks[this.currentTrack].url;
   }
 
-  static play(index = this.currentTrack) {
+  static play(index = this.currentTrack, playAll = false) {
     if (!this.audio) this.init();
 
+    this.playAllMode = playAll;
     this.currentTrack = index;
-    this.audio.src = this.tracks[index].url;
     this.isPlaying = true;
     this.isReady = false;
 
-    this.audio.load();
+    // 设置音源
+    const trackUrl = this.tracks[index].url;
+    
+    // 如果正在加载其他音频，先暂停
+    if (this.audio.src && this.audio.src !== window.location.href + trackUrl) {
+      this.audio.pause();
+    }
+    
+    this.audio.src = trackUrl;
 
-    const doPlay = () => {
-      this.audio.play().then(() => {
-        console.log('Music playing:', this.tracks[index].name);
-        this.saveProgress();
-      }).catch(e => {
-        console.warn('Music play failed:', e);
-      });
+    // 等待音频可以播放后再播放
+    const tryPlay = () => {
+      if (!this.isPlaying) return;
+      
+      const playPromise = this.audio.play();
+      
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('Music playing:', this.tracks[index].name);
+            this.saveProgress();
+          })
+          .catch(e => {
+            // 忽略中止错误（用户快速切换导致的）
+            if (e.name === 'AbortError' || e.message?.includes('abort')) {
+              console.log('Music play aborted (normal when switching tracks)');
+            } else {
+              console.warn('Music play failed:', e.message || e);
+            }
+            // 只有在不是用户主动切换的情况下才重置状态
+            if (this.currentTrack === index) {
+              this.isPlaying = false;
+            }
+          });
+      }
     };
 
-    if (this.audio.readyState >= 3) {
-      doPlay();
+    // 如果音频已经加载足够，直接播放
+    if (this.audio.readyState >= 2) {
+      tryPlay();
     } else {
-      this.audio.addEventListener('canplay', doPlay, { once: true });
+      // 等待可以播放
+      const onCanPlay = () => {
+        this.audio.removeEventListener('canplay', onCanPlay);
+        tryPlay();
+      };
+      this.audio.addEventListener('canplay', onCanPlay);
+      
+      // 超时处理
+      setTimeout(() => {
+        this.audio.removeEventListener('canplay', onCanPlay);
+        if (this.isPlaying && this.audio.paused) {
+          tryPlay();
+        }
+      }, 1000);
     }
+    
+    return this.isPlaying;
   }
 
   static pause() {
@@ -75,9 +125,43 @@ class MusicManager {
       this.pause();
       return false;
     } else {
-      this.play();
-      return true;
+      return this.play();
     }
+  }
+
+  static nextTrack() {
+    if (!this.isPlaying) return;
+
+    this.currentTrack = (this.currentTrack + 1) % this.tracks.length;
+    const trackUrl = this.tracks[this.currentTrack].url;
+    
+    // 暂停当前音频避免冲突
+    this.audio.pause();
+    this.audio.src = trackUrl;
+
+    // 等待可以播放后再播放
+    const onCanPlay = () => {
+      this.audio.removeEventListener('canplay', onCanPlay);
+      if (!this.isPlaying) return;
+      
+      this.audio.play()
+        .then(() => {
+          console.log('Music playing:', this.tracks[this.currentTrack].name);
+          this.saveProgress();
+        })
+        .catch(e => {
+          if (e.name !== 'AbortError') {
+            console.warn('Music play failed:', e.message || e);
+          }
+        });
+    };
+    
+    this.audio.addEventListener('canplay', onCanPlay);
+    
+    // 超时处理
+    setTimeout(() => {
+      this.audio.removeEventListener('canplay', onCanPlay);
+    }, 1000);
   }
 
   static setVolume(vol) {
@@ -91,12 +175,39 @@ class MusicManager {
     if (!this.audio) this.init();
 
     this.currentTrack = index;
-    this.audio.src = this.tracks[index].url;
+    const trackUrl = this.tracks[index].url;
     this.isReady = false;
-    this.audio.load();
 
     if (this.isPlaying) {
-      this.audio.play().catch(e => console.warn('Music play failed:', e));
+      // 暂停当前音频避免冲突
+      this.audio.pause();
+      this.audio.src = trackUrl;
+      
+      // 等待可以播放后再播放
+      const onCanPlay = () => {
+        this.audio.removeEventListener('canplay', onCanPlay);
+        if (!this.isPlaying) return;
+        
+        this.audio.play()
+          .then(() => {
+            console.log('Music playing:', this.tracks[index].name);
+            this.saveProgress();
+          })
+          .catch(e => {
+            if (e.name !== 'AbortError') {
+              console.warn('Music play failed:', e.message || e);
+            }
+          });
+      };
+      
+      this.audio.addEventListener('canplay', onCanPlay);
+      
+      // 超时处理
+      setTimeout(() => {
+        this.audio.removeEventListener('canplay', onCanPlay);
+      }, 1000);
+    } else {
+      this.audio.src = trackUrl;
     }
 
     this.saveProgress();

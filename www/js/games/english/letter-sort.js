@@ -13,6 +13,7 @@ class LetterSortGame {
   static render() {
     this.score = 0;
     this.currentRound = 0;
+    // 初始化数据
     this.initRound();
 
     return `
@@ -24,7 +25,7 @@ class LetterSortGame {
 
       <div class="game-area">
         <div class="round-info">第 <span id="round-num">1</span> / ${this.totalRounds} 轮</div>
-        <div class="target-sequence">
+        <div class="target-sequence" id="target-sequence">
           目标顺序: ${this.letters.join(' → ')}
         </div>
 

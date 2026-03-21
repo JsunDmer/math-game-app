@@ -23,36 +23,64 @@ let currentGame = null;
 let currentTab = 'english';
 
 function initApp() {
+  console.log('[initApp] Starting...');
+
   if (typeof MusicManager !== 'undefined') {
     MusicManager.init();
+    // 默认开启音乐
+    MusicManager.play(0, true);
   }
+
+  console.log('[initApp] Calling renderGameGrids...');
   renderGameGrids();
+
+  console.log('[initApp] Calling updateProgressDisplay...');
   updateProgressDisplay();
+
+  console.log('[initApp] Calling initSettingsToggles...');
   initSettingsToggles();
+
+  console.log('[initApp] Done!');
 }
 
 function renderGameGrids() {
+  console.log('[renderGameGrids] Starting...');
+  
   const englishGrid = document.getElementById('english-games');
   const mathGrid = document.getElementById('math-games');
+  
+  console.log('[renderGameGrids] englishGrid:', englishGrid);
+  console.log('[renderGameGrids] mathGrid:', mathGrid);
+  console.log('[renderGameGrids] GAMES_CONFIG:', GAMES_CONFIG);
 
   if (englishGrid) {
-    englishGrid.innerHTML = GAMES_CONFIG.english.map(game => `
+    const html = GAMES_CONFIG.english.map(game => `
       <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
         <div class="game-icon">${game.icon}</div>
         <div class="game-title">${game.name}</div>
         <div class="game-desc">${game.desc}</div>
       </div>
     `).join('');
+    console.log('[renderGameGrids] Setting englishGrid HTML, length:', html.length);
+    englishGrid.innerHTML = html;
+    console.log('[renderGameGrids] englishGrid HTML set, new length:', englishGrid.innerHTML.length);
+  } else {
+    console.warn('[renderGameGrids] englishGrid not found!');
   }
 
   if (mathGrid) {
-    mathGrid.innerHTML = GAMES_CONFIG.math.map(game => `
+    const html = GAMES_CONFIG.math.map(game => `
       <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
         <div class="game-icon">${game.icon}</div>
         <div class="game-title">${game.name}</div>
         <div class="game-desc">${game.desc}</div>
       </div>
     `).join('');
+    console.log('[renderGameGrids] Setting mathGrid HTML, length:', html.length);
+    mathGrid.innerHTML = html;
+    console.log('[renderGameGrids] mathGrid HTML set, new length:', mathGrid.innerHTML.length);
+  } else {
+    console.warn('[renderGameGrids] mathGrid not found!');
   }
 }
 
@@ -183,6 +211,7 @@ function toggleMusic() {
     return;
   }
 
+  // Toggle music on/off
   const isPlaying = MusicManager.toggle();
 
   toggle.classList.toggle('active', isPlaying);
@@ -190,6 +219,7 @@ function toggleMusic() {
 
   if (isPlaying) {
     renderMusicList();
+    // Music is already playing via toggle(), no need to call play() again
   }
 
   ProgressManager.updateSettings({ bgMusicEnabled: isPlaying });
@@ -198,7 +228,8 @@ function toggleMusic() {
 function selectMusic(index) {
   if (typeof MusicManager === 'undefined') return;
 
-  MusicManager.selectTrack(index);
+  // Play single track when user selects from list
+  MusicManager.play(index, false);
   renderMusicList();
 
   const toggle = document.getElementById('toggle-music');
@@ -220,6 +251,37 @@ function renderMusicList() {
       <span class="music-name">${track.name}</span>
     </div>
   `).join('');
+}
+
+function setVolume(value) {
+  if (typeof MusicManager === 'undefined') return;
+  MusicManager.setVolume(value / 100);
+}
+
+function initSettingsToggles() {
+  const soundToggle = document.getElementById('toggle-sound');
+  const musicToggle = document.getElementById('toggle-music');
+
+  if (soundToggle) {
+    soundToggle.classList.toggle('active', ProgressManager.isSoundEnabled());
+  }
+  if (musicToggle) {
+    musicToggle.classList.toggle('active', ProgressManager.isBgMusicEnabled());
+  }
+}
+
+function selectMusic(index) {
+  if (typeof MusicManager === 'undefined') return;
+
+  MusicManager.selectTrack(index);
+  renderMusicList();
+
+  const toggle = document.getElementById('toggle-music');
+  const controls = document.getElementById('music-controls');
+  toggle.classList.add('active');
+  controls.style.display = 'block';
+
+  ProgressManager.updateSettings({ bgMusicEnabled: true });
 }
 
 function renderMusicList() {
