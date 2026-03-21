@@ -106,7 +106,7 @@ class CountingGame {
       value === this.currentCount;
       this.score += 10;
       AudioManager.playCorrect();
-      VoiceManager.speakChinese(this.currentCount.toString());
+      VoiceManager.speakNumber(this.currentCount);
       ProgressManager.incrementWordsLearned(1);
       buttons.forEach(b => {
         if (parseInt(b.dataset.value) === this.currentCount) {

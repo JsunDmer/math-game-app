@@ -2,7 +2,6 @@
  * App.js - 主应用控制器
  */
 
-// 游戏配置
 const GAMES_CONFIG = {
   english: [
     { id: 'letters-match', name: '字母配对', icon: '🔤', desc: '把字母拖到图片下' },
@@ -20,39 +19,40 @@ const GAMES_CONFIG = {
   ]
 };
 
-// 全局状态
 let currentGame = null;
+let currentTab = 'english';
 
-// 初始化应用
 function initApp() {
   renderGameGrids();
   updateProgressDisplay();
-  bindEvents();
+  initSettingsToggles();
 }
 
-// 渲染游戏网格
 function renderGameGrids() {
   const englishGrid = document.getElementById('english-games');
   const mathGrid = document.getElementById('math-games');
 
-  englishGrid.innerHTML = GAMES_CONFIG.english.map(game => `
-    <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
-      <div class="game-icon">${game.icon}</div>
-      <div class="game-title">${game.name}</div>
-      <div class="game-desc">${game.desc}</div>
-    </div>
-  `).join('');
+  if (englishGrid) {
+    englishGrid.innerHTML = GAMES_CONFIG.english.map(game => `
+      <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
+        <div class="game-icon">${game.icon}</div>
+        <div class="game-title">${game.name}</div>
+        <div class="game-desc">${game.desc}</div>
+      </div>
+    `).join('');
+  }
 
-  mathGrid.innerHTML = GAMES_CONFIG.math.map(game => `
-    <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
-      <div class="game-icon">${game.icon}</div>
-      <div class="game-title">${game.name}</div>
-      <div class="game-desc">${game.desc}</div>
-    </div>
-  `).join('');
+  if (mathGrid) {
+    mathGrid.innerHTML = GAMES_CONFIG.math.map(game => `
+      <div class="game-card ${getCardColor(game.id)}" onclick="startGame('${game.id}')">
+        <div class="game-icon">${game.icon}</div>
+        <div class="game-title">${game.name}</div>
+        <div class="game-desc">${game.desc}</div>
+      </div>
+    `).join('');
+  }
 }
 
-// 获取卡片颜色
 function getCardColor(gameId) {
   const colors = ['red', 'blue', 'yellow', 'purple', 'green', 'orange'];
   const index = GAMES_CONFIG.english.findIndex(g => g.id === gameId);
@@ -62,44 +62,57 @@ function getCardColor(gameId) {
   return 'blue';
 }
 
-// 绑定事件
-function bindEvents() {
-  // 阻止默认触摸行为
-  document.addEventListener('touchmove', (e) => {
-    if (currentGame) e.preventDefault();
-  }, { passive: false });
+function switchTab(pageId, tabId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  
+  const page = document.getElementById(pageId);
+  const tab = document.getElementById(tabId);
+  
+  if (page) page.classList.add('active');
+  if (tab) tab.classList.add('active');
+  
+  currentTab = pageId.replace('-page', '');
+  updateProgressDisplay();
+  
+  if (typeof AudioManager !== 'undefined') {
+    AudioManager.playClick();
+  }
 }
 
-// 显示首页
+function showEnglishTab() {
+  switchTab('english-page', 'tab-english');
+}
+
+function showMathTab() {
+  switchTab('math-page', 'tab-math');
+}
+
+function showSettingsTab() {
+  switchTab('settings-page', 'tab-settings');
+  renderMusicList();
+}
+
 function showHome() {
   currentGame = null;
-  document.getElementById('home-page').classList.add('active');
-  document.getElementById('game-page').classList.remove('active');
-  document.getElementById('settings-page').classList.remove('active');
-  updateProgressDisplay();
-  AudioManager.playClick();
+  showEnglishTab();
 }
 
-// 显示设置页
 function showSettings() {
-  currentGame = null;
-  document.getElementById('settings-page').classList.add('active');
-  document.getElementById('home-page').classList.remove('active');
-  document.getElementById('game-page').classList.remove('active');
-  AudioManager.playClick();
+  showSettingsTab();
 }
 
-// 显示游戏页面
 function showGame(gameContent) {
   currentGame = gameContent;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('game-page').classList.add('active');
-  document.getElementById('home-page').classList.remove('active');
-  document.getElementById('settings-page').classList.remove('active');
 }
 
-// 启动游戏
 function startGame(gameId) {
-  AudioManager.playClick();
+  if (typeof AudioManager !== 'undefined') {
+    AudioManager.playClick();
+  }
   ProgressManager.incrementGamePlayed(gameId);
 
   let gameContent = '';
@@ -142,26 +155,61 @@ function startGame(gameId) {
   showGame(gameContent);
 }
 
-// 切换声音设置
 function toggleSound() {
   const toggle = document.getElementById('toggle-sound');
   const isEnabled = !ProgressManager.isSoundEnabled();
   ProgressManager.updateSettings({ soundEnabled: isEnabled });
   toggle.classList.toggle('active', isEnabled);
-  if (isEnabled) AudioManager.playClick();
+  if (isEnabled && typeof AudioManager !== 'undefined') {
+    AudioManager.playClick();
+  }
 }
 
-// 切换音乐设置
 function toggleMusic() {
   const toggle = document.getElementById('toggle-music');
-  const isEnabled = !ProgressManager.isBgMusicEnabled();
-  ProgressManager.updateSettings({ bgMusicEnabled: isEnabled });
-  toggle.classList.toggle('active', isEnabled);
-  if (isEnabled) AudioManager.playBackground();
-  AudioManager.playClick();
+  const controls = document.getElementById('music-controls');
+  
+  if (typeof MusicManager === 'undefined') {
+    console.warn('MusicManager not loaded');
+    return;
+  }
+  
+  const isPlaying = MusicManager.toggle();
+  
+  toggle.classList.toggle('active', isPlaying);
+  controls.style.display = isPlaying ? 'block' : 'none';
+  
+  if (isPlaying) {
+    renderMusicList();
+  }
+  
+  ProgressManager.updateSettings({ bgMusicEnabled: isPlaying });
 }
 
-// 初始化设置页开关状态
+function renderMusicList() {
+  const list = document.getElementById('music-list');
+  if (!list || typeof MusicManager === 'undefined') return;
+  
+  list.innerHTML = MusicManager.tracks.map((track, i) => `
+    <div class="music-item ${i === MusicManager.currentTrack ? 'active' : ''}" 
+         onclick="selectMusic(${i})">
+      <span class="music-icon">${track.icon}</span>
+      <span class="music-name">${track.name}</span>
+    </div>
+  `).join('');
+}
+
+function selectMusic(index) {
+  if (typeof MusicManager === 'undefined') return;
+  MusicManager.selectTrack(index);
+  renderMusicList();
+}
+
+function setVolume(value) {
+  if (typeof MusicManager === 'undefined') return;
+  MusicManager.setVolume(value / 100);
+}
+
 function initSettingsToggles() {
   const soundToggle = document.getElementById('toggle-sound');
   const musicToggle = document.getElementById('toggle-music');
@@ -174,9 +222,23 @@ function initSettingsToggles() {
   }
 }
 
-// 显示星星动画
+function updateProgressDisplay() {
+  const starsEn = document.getElementById('stars-count-en');
+  const starsMath = document.getElementById('stars-count-math');
+  const completedEl = document.getElementById('completed-count');
+  const wordsEl = document.getElementById('words-count');
+
+  const stars = ProgressManager.getStars();
+  if (starsEn) starsEn.textContent = stars;
+  if (starsMath) starsMath.textContent = stars;
+  if (completedEl) completedEl.textContent = ProgressManager.getCompletedGamesCount();
+  if (wordsEl) wordsEl.textContent = ProgressManager.getWordsLearned();
+}
+
 function showStarAnimation(x, y) {
-  AudioManager.playStar();
+  if (typeof AudioManager !== 'undefined') {
+    AudioManager.playStar();
+  }
   const star = document.createElement('div');
   star.className = 'star-particle';
   star.textContent = '⭐';
@@ -188,17 +250,18 @@ function showStarAnimation(x, y) {
   updateProgressDisplay();
 }
 
-// 显示反馈弹窗
 function showFeedback(isCorrect, message = '') {
   const feedback = document.createElement('div');
   feedback.className = `feedback-popup ${isCorrect ? 'success' : 'error'}`;
   feedback.textContent = message || (isCorrect ? '🎉 太棒了!' : '💪 再试试!');
   document.body.appendChild(feedback);
 
-  if (isCorrect) {
-    AudioManager.playCorrect();
-  } else {
-    AudioManager.playWrong();
+  if (typeof AudioManager !== 'undefined') {
+    if (isCorrect) {
+      AudioManager.playCorrect();
+    } else {
+      AudioManager.playWrong();
+    }
   }
 
   setTimeout(() => {
@@ -207,8 +270,6 @@ function showFeedback(isCorrect, message = '') {
   }, 1500);
 }
 
-// DOM 加载完成后初始化
 document.addEventListener('DOMContentLoaded', () => {
   initApp();
-  initSettingsToggles();
 });

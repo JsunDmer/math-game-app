@@ -106,7 +106,7 @@ class NumberMatchGame {
         this.matchedPairs++;
         this.score += 10;
         AudioManager.playCorrect();
-        VoiceManager.speakChinese(first.number.toString());
+        VoiceManager.speakNumber(first.number);
 
         document.getElementById('score').textContent = this.score;
         document.getElementById('matched-count').textContent = this.matchedPairs;

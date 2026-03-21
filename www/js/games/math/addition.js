@@ -111,7 +111,7 @@ class AdditionGame {
       btn.classList.add('correct');
       this.score += 10;
       AudioManager.playCorrect();
-      VoiceManager.speakChinese(this.answer.toString());
+      VoiceManager.speakNumber(this.answer);
       ProgressManager.incrementWordsLearned(1);
     } else {
       btn.classList.add('wrong');
