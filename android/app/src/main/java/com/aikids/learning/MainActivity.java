@@ -3,10 +3,6 @@ package com.aikids.learning;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.webkit.WebChromeClient;
-import android.webkit.ConsoleMessage;
-import android.webkit.WebSettings;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
@@ -18,11 +14,8 @@ public class MainActivity extends BridgeActivity {
         try {
             super.onCreate(savedInstanceState);
             Log.d(TAG, "MainActivity onCreate started");
-            
-            if (BuildConfig.DEBUG) {
-                WebView.setWebContentsDebuggingEnabled(true);
-                Log.d(TAG, "WebView debugging enabled");
-            }
+            WebView.setWebContentsDebuggingEnabled(true);
+            Log.d(TAG, "WebView debugging enabled");
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
         }
