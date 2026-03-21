@@ -19,7 +19,7 @@ class NumberMatchGame {
 
     return `
       <div class="top-bar" style="padding: 12px 16px; margin-bottom: 12px;">
-        <button class="back-btn" onclick="showHome()" style="padding: 8px 14px; font-size: 14px;">🏠</button>
+        <button class="back-btn" onclick="showHome()">🏠 返回</button>
         <span class="game-title-header" style="font-size: 20px;">数字配对</span>
         <span class="stars-display">⭐ <span id="score">0</span></span>
       </div>
@@ -43,26 +43,28 @@ class NumberMatchGame {
           display: flex;
           flex-direction: column;
           height: calc(100vh - 120px);
-          padding: 0 8px;
+          padding: 0 12px;
         }
         .cards-grid { 
           display: grid; 
-          grid-template-columns: repeat(3, 1fr); 
-          gap: 5px; 
+          grid-template-columns: repeat(4, 1fr); 
+          gap: 8px; 
           flex: 1;
           align-content: start;
+          max-width: 480px;
+          margin: 0 auto;
         }
         .card { 
           aspect-ratio: 1; 
           background: white; 
-          border-radius: 6px; 
+          border-radius: 8px; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
-          font-size: 14px; 
+          font-size: 16px; 
           font-weight: bold; 
           cursor: pointer; 
-          box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1); 
           transition: all 0.3s; 
           border: 2px solid transparent;
           min-height: 0;
@@ -71,8 +73,8 @@ class NumberMatchGame {
         .card.flipped { background: var(--primary-blue); color: white; border-color: var(--primary-blue); }
         .card.matched { background: var(--success); color: white; border-color: var(--success); opacity: 0.7; pointer-events: none; }
         @media (min-width: 600px) {
-          .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 8px; }
-          .card { font-size: 18px; }
+          .cards-grid { grid-template-columns: repeat(4, 1fr); gap: 10px; }
+          .card { font-size: 20px; }
         }
       </style>
     `;

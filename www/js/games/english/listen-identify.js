@@ -47,16 +47,16 @@ class ListenIdentifyGame {
       <style>
         .game-area { text-align: center; padding: 20px 0; }
         .round-info { font-size: 18px; color: #666; margin-bottom: 20px; }
-        .listen-area { margin-bottom: 30px; }
-        .play-btn { width: 180px; height: 180px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #4080E0); border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 30px rgba(84, 160, 255, 0.4); transition: transform 0.2s; }
+        .listen-area { margin-bottom: 24px; }
+        .play-btn { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #4080E0); border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(84, 160, 255, 0.4); transition: transform 0.2s; }
         .play-btn:active { transform: scale(0.95); }
         .play-btn.playing { animation: pulse 1s infinite; }
-        .play-icon { font-size: 64px; }
-        .play-text { font-size: 18px; color: white; margin-top: 8px; }
-        .listen-hint { margin-top: 16px; font-size: 16px; color: #888; min-height: 24px; }
-        .letters-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 0 10px; }
-        .letter-btn { height: 60px; font-size: 28px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 3px solid #ddd; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-        .letter-btn:active { transform: scale(0.9); }
+        .play-icon { font-size: 48px; }
+        .play-text { font-size: 14px; color: white; margin-top: 4px; }
+        .listen-hint { margin-top: 12px; font-size: 16px; color: #888; min-height: 24px; }
+        .letters-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 0 20px; max-width: 500px; margin: 0 auto; }
+        .letter-btn { height: 90px; font-size: 42px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 3px solid #ddd; border-radius: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .letter-btn:active { transform: scale(0.95); }
         .letter-btn.correct { background: var(--success); color: white; border-color: var(--success); }
         .letter-btn.wrong { background: var(--error); color: white; border-color: var(--error); }
         .letter-btn:disabled { pointer-events: none; opacity: 0.5; }

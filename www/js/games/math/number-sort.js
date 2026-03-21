@@ -55,17 +55,17 @@ class NumberSortGame {
 
       <style>
         .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 12px; }
-        .sort-hint { font-size: 18px; color: var(--primary-blue); margin-bottom: 12px; }
-        .target-hint { font-size: 14px; color: #888; background: #f5f5f5; padding: 8px 16px; border-radius: 8px; margin-bottom: 20px; display: inline-block; }
-        .answer-area { margin-bottom: 20px; }
-        .answer-slots { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .number-slot { width: 55px; height: 55px; border: 3px solid var(--primary-green); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; background: rgba(78, 205, 196, 0.1); cursor: pointer; transition: all 0.2s; }
-        .number-slot.filled { background: white; }
-        .number-slot:active { transform: scale(0.9); }
-        .available-numbers { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
-        .number-btn { width: 55px; height: 55px; font-size: 24px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-orange), #E88A30); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3); }
-        .number-btn:active { transform: scale(0.9); }
+        .round-info { font-size: 18px; color: #666; margin-bottom: 24px; }
+        .sort-hint { font-size: 20px; color: var(--primary-blue); margin-bottom: 20px; font-weight: bold; }
+        .target-hint { font-size: 14px; color: #888; background: #f5f5f5; padding: 10px 20px; border-radius: 12px; margin-bottom: 30px; display: inline-block; }
+        .answer-area { margin-bottom: 30px; }
+        .answer-slots { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+        .number-slot { width: 80px; height: 80px; border: 3px solid var(--primary-green); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; background: rgba(78, 205, 196, 0.1); cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2); }
+        .number-slot.filled { background: white; border-color: var(--primary-green); box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3); }
+        .number-slot:active { transform: scale(0.95); }
+        .available-numbers { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 30px; padding: 20px; background: rgba(255, 159, 67, 0.1); border-radius: 20px; }
+        .number-btn { width: 80px; height: 80px; font-size: 36px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-orange), #E88A30); color: white; border: none; border-radius: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3); }
+        .number-btn:active { transform: scale(0.95); }
         .number-btn.used { opacity: 0.3; pointer-events: none; }
       </style>
     `;

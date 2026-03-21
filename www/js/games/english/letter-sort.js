@@ -53,17 +53,17 @@ class LetterSortGame {
 
       <style>
         .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 16px; }
-        .target-sequence { background: #f0f0f0; padding: 12px 20px; border-radius: 12px; font-size: 18px; color: #666; margin-bottom: 20px; }
-        .sort-hint { font-size: 16px; color: #888; margin-bottom: 12px; }
-        .letter-slots { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
-        .letter-slot { width: 50px; height: 50px; border: 3px dashed #ddd; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; cursor: pointer; transition: all 0.2s; background: white; }
-        .letter-slot.filled { border-style: solid; border-color: var(--primary-blue); background: rgba(84, 160, 255, 0.1); }
-        .letter-slot.selected { border-color: var(--primary-pink); background: rgba(255, 107, 157, 0.2); transform: scale(1.1); }
-        .available-letters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .letter-btn { width: 50px; height: 50px; font-size: 22px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 3px solid var(--primary-purple); border-radius: 12px; cursor: pointer; transition: all 0.2s; }
-        .letter-btn:active { transform: scale(0.9); }
-        .letter-btn.used { opacity: 0.3; border-color: #ccc; }
+        .round-info { font-size: 20px; color: #666; margin-bottom: 20px; font-weight: bold; }
+        .target-sequence { background: #f0f0f0; padding: 16px 28px; border-radius: 16px; font-size: 22px; color: #666; margin-bottom: 30px; display: inline-block; }
+        .sort-hint { font-size: 20px; color: #888; margin-bottom: 20px; font-weight: bold; }
+        .letter-slots { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 40px; }
+        .letter-slot { width: 90px; height: 90px; border: 4px dashed #ddd; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: bold; cursor: pointer; transition: all 0.2s; background: white; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .letter-slot.filled { border-style: solid; border-color: var(--primary-blue); background: rgba(84, 160, 255, 0.1); box-shadow: 0 6px 20px rgba(84, 160, 255, 0.3); }
+        .letter-slot.selected { border-color: var(--primary-pink); background: rgba(255, 107, 157, 0.2); transform: scale(1.1); box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3); }
+        .available-letters { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; padding: 24px; background: rgba(155, 89, 182, 0.1); border-radius: 24px; margin: 0 20px; }
+        .letter-btn { width: 90px; height: 90px; font-size: 42px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 4px solid var(--primary-purple); border-radius: 20px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(155, 89, 182, 0.3); }
+        .letter-btn:active { transform: scale(0.95); }
+        .letter-btn.used { opacity: 0.2; border-color: #ccc; transform: scale(0.9); }
       </style>
     `;
   }
