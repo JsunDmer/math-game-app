@@ -61,22 +61,22 @@ class LettersMatchGame {
       </div>
 
       <style>
-        .game-area { margin-bottom: 20px; }
-        .words-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 24px; }
-        .word-card { background: white; border-radius: 16px; padding: 16px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .word-emoji { font-size: 48px; margin-bottom: 8px; }
-        .word-text { font-size: 20px; color: #5D4E37; margin-bottom: 12px; }
-        .drop-zone { height: 60px; border: 3px dashed #ddd; border-radius: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
+        .game-area { margin-bottom: 12px; }
+        .words-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+        .word-card { background: white; border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .word-emoji { font-size: 36px; margin-bottom: 4px; }
+        .word-text { font-size: 16px; color: #5D4E37; margin-bottom: 8px; }
+        .drop-zone { height: 44px; border: 2px dashed #ddd; border-radius: 8px; display: flex; align-items: center; justify-content: center; transition: all 0.3s; }
         .drop-zone.drag-over { border-color: var(--primary-blue); background: rgba(84, 160, 255, 0.1); }
         .drop-zone.correct { border-color: var(--success); background: rgba(77, 217, 100, 0.1); }
-        .letters-container { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; padding: 16px; background: white; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .letter-card { width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary-pink), #E85A8C); border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: grab; box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3); transition: transform 0.2s, opacity 0.2s; }
+        .letters-container { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 12px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .letter-card { width: 52px; height: 52px; background: linear-gradient(135deg, var(--primary-pink), #E85A8C); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: grab; box-shadow: 0 2px 8px rgba(255, 107, 157, 0.3); transition: transform 0.2s, opacity 0.2s; }
         .letter-card:active { cursor: grabbing; }
         .letter-card.dragging { opacity: 0.5; transform: scale(1.1); }
         .letter-card.matched { opacity: 0.3; pointer-events: none; }
-        .letter-text { font-size: 36px; font-weight: bold; color: white; }
+        .letter-text { font-size: 28px; font-weight: bold; color: white; }
         .game-progress { text-align: center; }
-        .progress-text { margin-top: 8px; color: #666; }
+        .progress-text { margin-top: 6px; color: #666; font-size: 14px; }
       </style>
     `;
   }

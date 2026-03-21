@@ -56,16 +56,16 @@ class AdditionGame {
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 24px; }
-        .addition-display { background: white; border-radius: 24px; padding: 30px 20px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .equation { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 16px; }
-        .num-display { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; min-width: 80px; min-height: 80px; }
-        .num-display .item { font-size: 36px; }
-        .operator { font-size: 36px; font-weight: bold; color: var(--primary-pink); }
-        .result-slot { width: 80px; height: 80px; border: 4px dashed var(--primary-blue); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; color: var(--primary-blue); }
-        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 30px; max-width: 400px; margin: 0 auto; }
-        .option-btn { padding: 24px; font-size: 32px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 3px solid #ddd; border-radius: 16px; cursor: pointer; transition: all 0.2s; }
+        .game-area { text-align: center; padding: 8px 0; }
+        .round-info { font-size: 16px; color: #666; margin-bottom: 8px; }
+        .addition-display { background: white; border-radius: 16px; padding: 16px 12px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .equation { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px; }
+        .num-display { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; min-width: 60px; min-height: 60px; }
+        .num-display .item { font-size: 28px; }
+        .operator { font-size: 28px; font-weight: bold; color: var(--primary-pink); }
+        .result-slot { width: 60px; height: 60px; border: 3px dashed var(--primary-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; color: var(--primary-blue); }
+        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 20px; max-width: 320px; margin: 0 auto; }
+        .option-btn { padding: 16px; font-size: 28px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
         .option-btn:active { transform: scale(0.95); }
         .option-btn.correct { background: var(--success); color: white; border-color: var(--success); animation: bounce 0.5s ease; }
         .option-btn.wrong { background: var(--error); color: white; border-color: var(--error); animation: shake 0.5s ease; }

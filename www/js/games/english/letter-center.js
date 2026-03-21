@@ -49,22 +49,23 @@ class LetterCenterGame {
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .progress-indicator { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 30px; }
-        .progress-dot { width: 32px; height: 32px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+        .game-area { text-align: center; padding: 4px 0; }
+        .progress-indicator { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin-bottom: 8px; }
+        .progress-dot { width: 28px; height: 28px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; transition: all 0.2s; }
         .progress-dot.learned { background: var(--success); color: white; }
-        .progress-dot.current { background: var(--primary-blue); color: white; transform: scale(1.2); }
-        .letter-display-area { margin-bottom: 30px; }
-        .current-letter { font-size: 120px; font-weight: bold; color: var(--primary-pink); text-shadow: 4px 4px 0 rgba(0,0,0,0.1); margin-bottom: 10px; }
-        .letter-sound { font-size: 28px; color: #888; }
-        .control-buttons { display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 24px; }
+        .progress-dot.current { background: var(--primary-blue); color: white; transform: scale(1.15); }
+        .letter-display-area { margin-bottom: 6px; }
+        .current-letter { font-size: 60px; font-weight: bold; color: var(--primary-pink); text-shadow: 2px 2px 0 rgba(0,0,0,0.1); margin-bottom: 2px; }
+        .letter-sound { font-size: 16px; color: #888; }
+        .control-buttons { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 6px; }
         .control-btn { border: none; cursor: pointer; transition: transform 0.2s; }
         .control-btn:active { transform: scale(0.9); }
-        .control-btn.prev, .control-btn.next { width: 60px; height: 60px; border-radius: 50%; background: white; font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .control-btn.play { width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #4080E0); box-shadow: 0 8px 30px rgba(84, 160, 255, 0.4); }
-        .control-btn.play .play-icon { font-size: 40px; }
+        .control-btn.prev, .control-btn.next { width: 40px; height: 40px; border-radius: 50%; background: white; font-size: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .control-btn.play { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-blue), #4080E0); box-shadow: 0 4px 16px rgba(84, 160, 255, 0.4); }
+        .control-btn.play .play-icon { font-size: 22px; }
         .control-btn.play:hover { transform: scale(1.05); }
-        .learning-tips { font-size: 16px; color: #888; padding: 12px 20px; background: #f5f5f5; border-radius: 12px; }
+        .learning-tips { font-size: 12px; color: #888; padding: 6px 10px; background: #f5f5f5; border-radius: 8px; margin-bottom: 8px; }
+        .btn-success { padding: 10px 20px !important; font-size: 16px !important; }
       </style>
     `;
   }

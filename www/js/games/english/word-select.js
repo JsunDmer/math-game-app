@@ -66,13 +66,13 @@ class WordSelectGame {
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 20px; }
-        .emoji-display { margin-bottom: 30px; }
-        .emoji-big { font-size: 120px; animation: float 2s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 0 20px; }
-        .option-btn { padding: 20px; font-size: 22px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 3px solid #ddd; border-radius: 16px; cursor: pointer; transition: all 0.3s; min-height: 70px; }
+        .game-area { text-align: center; padding: 8px 0; }
+        .round-info { font-size: 16px; color: #666; margin-bottom: 8px; }
+        .emoji-display { margin-bottom: 12px; }
+        .emoji-big { font-size: 80px; animation: float 2s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .options-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 0 16px; max-width: 400px; margin: 0 auto; }
+        .option-btn { padding: 14px; font-size: 18px; font-family: 'ZCOOL KuaiLe', sans-serif; background: white; border: 2px solid #ddd; border-radius: 12px; cursor: pointer; transition: all 0.3s; min-height: 50px; }
         .option-btn:active { transform: scale(0.95); }
         .option-btn.correct { background: var(--success); color: white; border-color: var(--success); animation: bounce 0.5s ease; }
         .option-btn.wrong { background: var(--error); color: white; border-color: var(--error); animation: shake 0.5s ease; }

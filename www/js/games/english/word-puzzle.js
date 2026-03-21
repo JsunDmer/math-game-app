@@ -55,18 +55,18 @@ class WordPuzzleGame {
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 24px; }
-        .target-word { margin-bottom: 30px; }
-        .word-hint { font-size: 18px; color: #888; margin-bottom: 12px; }
-        .word-display { font-size: 42px; font-weight: bold; color: var(--primary-pink); letter-spacing: 6px; }
+        .game-area { text-align: center; padding: 8px 0; }
+        .round-info { font-size: 16px; color: #666; margin-bottom: 8px; }
+        .target-word { margin-bottom: 12px; }
+        .word-hint { font-size: 14px; color: #888; margin-bottom: 6px; }
+        .word-display { font-size: 32px; font-weight: bold; color: var(--primary-pink); letter-spacing: 4px; }
         .puzzle-area { }
-        .answer-slots { display: flex; justify-content: center; gap: 12px; margin-bottom: 30px; }
-        .answer-slot { width: 80px; height: 90px; border: 3px solid var(--primary-blue); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; background: rgba(84, 160, 255, 0.1); cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(84, 160, 255, 0.2); }
-        .answer-slot.filled { background: white; border-color: var(--primary-blue); box-shadow: 0 6px 20px rgba(84, 160, 255, 0.3); }
+        .answer-slots { display: flex; justify-content: center; gap: 8px; margin-bottom: 12px; }
+        .answer-slot { width: 56px; height: 64px; border: 2px solid var(--primary-blue); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; background: rgba(84, 160, 255, 0.1); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(84, 160, 255, 0.2); }
+        .answer-slot.filled { background: white; border-color: var(--primary-blue); box-shadow: 0 4px 12px rgba(84, 160, 255, 0.3); }
         .answer-slot:active { transform: scale(0.95); }
-        .scrambled-letters { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 30px; padding: 20px; background: rgba(78, 205, 196, 0.1); border-radius: 20px; }
-        .scrambled-btn { width: 80px; height: 80px; font-size: 36px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-green), #3DB9A8); color: white; border: none; border-radius: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3); }
+        .scrambled-letters { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding: 12px; background: rgba(78, 205, 196, 0.1); border-radius: 16px; }
+        .scrambled-btn { width: 56px; height: 56px; font-size: 28px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-green), #3DB9A8); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(78, 205, 196, 0.3); }
         .scrambled-btn:active { transform: scale(0.95); }
         .scrambled-btn.used { opacity: 0.3; pointer-events: none; }
       </style>

@@ -101,6 +101,7 @@ body {
   min-height: 100vh;
   display: none;
   animation: fadeIn 0.3s ease;
+  padding-bottom: 80px; /* 为底部导航栏留出空间 */
 }
 
 .page.active {
@@ -186,14 +187,14 @@ body {
 /* Game Card */
 .game-card {
   background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg) var(--space-md);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
   cursor: pointer;
   transition: var(--transition-normal);
   box-shadow: var(--shadow-sm);
-  border: 3px solid transparent;
+  border: 2px solid transparent;
   text-align: center;
-  min-height: 180px;
+  min-height: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -234,18 +235,18 @@ body {
 }
 
 .game-icon {
-  font-size: 64px;
-  margin-bottom: var(--space-sm);
+  font-size: 36px;
+  margin-bottom: 2px;
 }
 
 .game-title {
-  font-size: 22px;
+  font-size: 16px;
   margin-bottom: var(--space-xs);
   color: var(--text-primary);
 }
 
 .game-desc {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
@@ -565,8 +566,8 @@ body {
 .game-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
 }
 
 /* 平板 (600px - 1024px) */

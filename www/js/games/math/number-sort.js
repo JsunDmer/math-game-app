@@ -54,17 +54,17 @@ class NumberSortGame {
       </div>
 
       <style>
-        .game-area { text-align: center; padding: 20px 0; }
-        .round-info { font-size: 18px; color: #666; margin-bottom: 24px; }
-        .sort-hint { font-size: 20px; color: var(--primary-blue); margin-bottom: 20px; font-weight: bold; }
-        .target-hint { font-size: 14px; color: #888; background: #f5f5f5; padding: 10px 20px; border-radius: 12px; margin-bottom: 30px; display: inline-block; }
-        .answer-area { margin-bottom: 30px; }
-        .answer-slots { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-        .number-slot { width: 80px; height: 80px; border: 3px solid var(--primary-green); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; background: rgba(78, 205, 196, 0.1); cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(78, 205, 196, 0.2); }
-        .number-slot.filled { background: white; border-color: var(--primary-green); box-shadow: 0 6px 20px rgba(78, 205, 196, 0.3); }
+        .game-area { text-align: center; padding: 8px 0; }
+        .round-info { font-size: 16px; color: #666; margin-bottom: 8px; }
+        .sort-hint { font-size: 16px; color: var(--primary-blue); margin-bottom: 8px; font-weight: bold; }
+        .target-hint { font-size: 12px; color: #888; background: #f5f5f5; padding: 6px 12px; border-radius: 8px; margin-bottom: 12px; display: inline-block; }
+        .answer-area { margin-bottom: 12px; }
+        .answer-slots { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+        .number-slot { width: 60px; height: 60px; border: 2px solid var(--primary-green); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; background: rgba(78, 205, 196, 0.1); cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(78, 205, 196, 0.2); }
+        .number-slot.filled { background: white; border-color: var(--primary-green); box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3); }
         .number-slot:active { transform: scale(0.95); }
-        .available-numbers { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 30px; padding: 20px; background: rgba(255, 159, 67, 0.1); border-radius: 20px; }
-        .number-btn { width: 80px; height: 80px; font-size: 36px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-orange), #E88A30); color: white; border: none; border-radius: 16px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 159, 67, 0.3); }
+        .available-numbers { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; margin-top: 12px; padding: 12px; background: rgba(255, 159, 67, 0.1); border-radius: 16px; }
+        .number-btn { width: 60px; height: 60px; font-size: 28px; font-family: 'ZCOOL KuaiLe', sans-serif; background: linear-gradient(135deg, var(--primary-orange), #E88A30); color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 2px 8px rgba(255, 159, 67, 0.3); }
         .number-btn:active { transform: scale(0.95); }
         .number-btn.used { opacity: 0.3; pointer-events: none; }
       </style>
