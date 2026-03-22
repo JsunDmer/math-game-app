@@ -1,3 +1,7 @@
+/**
+ * Music Manager - 背景音乐管理
+ * 优化版本：修复内存泄漏，添加音频缓存，优化事件处理
+ */
 class MusicManager {
   static audio = null;
   static currentTrack = 0;
@@ -5,6 +9,9 @@ class MusicManager {
   static volume = 0.5;
   static isReady = false;
   static playAllMode = false;
+  static eventListeners = new Map(); // 跟踪事件监听器
+  static audioCache = new Map(); // 音频缓存
+  static maxCacheSize = 2; // 最多缓存2首歌曲
 
   static tracks = [
     { name: '欢乐旋律', url: 'audio/happy.mp3', icon: '🎵' },
@@ -19,96 +26,128 @@ class MusicManager {
     this.audio = new Audio();
     this.audio.volume = this.volume;
     this.audio.crossOrigin = 'anonymous';
+    this.audio.preload = 'metadata'; // 只预加载元数据
 
-    this.audio.addEventListener('error', (e) => {
-      console.warn('Music error:', e);
-    });
+    // 使用绑定的事件处理器，方便移除
+    this._boundErrorHandler = this._handleError.bind(this);
+    this._boundEndedHandler = this._handleEnded.bind(this);
+    this._boundCanPlayHandler = this._handleCanPlay.bind(this);
 
-    this.audio.addEventListener('ended', () => {
-      if (this.isPlaying) {
-        if (this.playAllMode) {
-          this.nextTrack();
-        } else {
-          // In single track mode, loop the current track
-          this.audio.currentTime = 0;
-          this.audio.play().catch(e => console.warn('Music replay failed:', e));
-        }
-      }
-    });
-
-    this.audio.addEventListener('canplaythrough', () => {
-      this.isReady = true;
-    });
+    this.audio.addEventListener('error', this._boundErrorHandler);
+    this.audio.addEventListener('ended', this._boundEndedHandler);
+    this.audio.addEventListener('canplaythrough', this._boundCanPlayHandler);
 
     this.loadProgress();
+    
+    // 预加载第一首歌
+    this._preloadTrack(0);
+    
+    console.log('[MusicManager] Initialized with cache');
+  }
+
+  static _handleError(e) {
+    console.warn('Music error:', e);
+    this.isReady = false;
+  }
+
+  static _handleEnded() {
+    if (this.isPlaying) {
+      if (this.playAllMode) {
+        this.nextTrack();
+      } else {
+        // 单曲循环
+        this.audio.currentTime = 0;
+        this.audio.play().catch(e => {
+          if (e.name !== 'AbortError') {
+            console.warn('Music replay failed:', e);
+          }
+        });
+      }
+    }
+  }
+
+  static _handleCanPlay() {
+    this.isReady = true;
+  }
+
+  // 预加载指定曲目
+  static _preloadTrack(index) {
+    const track = this.tracks[index];
+    if (!track || this.audioCache.has(track.url)) return;
+
+    // 如果缓存已满，移除最旧的
+    if (this.audioCache.size >= this.maxCacheSize) {
+      const firstKey = this.audioCache.keys().next().value;
+      const oldAudio = this.audioCache.get(firstKey);
+      if (oldAudio) {
+        oldAudio.pause();
+        oldAudio.src = '';
+      }
+      this.audioCache.delete(firstKey);
+    }
+
+    const preloadAudio = new Audio();
+    preloadAudio.preload = 'auto';
+    preloadAudio.src = track.url;
+    this.audioCache.set(track.url, preloadAudio);
   }
 
   static play(index = this.currentTrack, playAll = false) {
     if (!this.audio) this.init();
+
+    // 停止当前播放
+    this.pause();
 
     this.playAllMode = playAll;
     this.currentTrack = index;
     this.isPlaying = true;
     this.isReady = false;
 
-    // 设置音源
-    const trackUrl = this.tracks[index].url;
-    
-    // 如果正在加载其他音频，先暂停
-    if (this.audio.src && this.audio.src !== window.location.href + trackUrl) {
-      this.audio.pause();
-    }
-    
-    this.audio.src = trackUrl;
+    const track = this.tracks[index];
+    const trackUrl = track.url;
 
-    // 等待音频可以播放后再播放
-    const tryPlay = () => {
-      if (!this.isPlaying) return;
-      
-      const playPromise = this.audio.play();
-      
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log('Music playing:', this.tracks[index].name);
-            this.saveProgress();
-          })
-          .catch(e => {
-            // 忽略中止错误（用户快速切换导致的）
-            if (e.name === 'AbortError' || e.message?.includes('abort')) {
-              console.log('Music play aborted (normal when switching tracks)');
-            } else {
-              console.warn('Music play failed:', e.message || e);
-            }
-            // 只有在不是用户主动切换的情况下才重置状态
-            if (this.currentTrack === index) {
-              this.isPlaying = false;
-            }
-          });
-      }
-    };
-
-    // 如果音频已经加载足够，直接播放
-    if (this.audio.readyState >= 2) {
-      tryPlay();
+    // 检查缓存
+    const cachedAudio = this.audioCache.get(trackUrl);
+    if (cachedAudio && cachedAudio.readyState >= 2) {
+      // 使用缓存的音频
+      this.audio.src = trackUrl;
+      this._tryPlay();
     } else {
-      // 等待可以播放
-      const onCanPlay = () => {
-        this.audio.removeEventListener('canplay', onCanPlay);
-        tryPlay();
-      };
-      this.audio.addEventListener('canplay', onCanPlay);
+      // 设置音源并等待加载
+      this.audio.src = trackUrl;
       
-      // 超时处理
-      setTimeout(() => {
-        this.audio.removeEventListener('canplay', onCanPlay);
-        if (this.isPlaying && this.audio.paused) {
-          tryPlay();
-        }
-      }, 1000);
+      // 预加载下一首
+      const nextIndex = (index + 1) % this.tracks.length;
+      this._preloadTrack(nextIndex);
     }
-    
+
     return this.isPlaying;
+  }
+
+  static _tryPlay() {
+    if (!this.isPlaying) return;
+
+    const playPromise = this.audio.play();
+
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log('Music playing:', this.tracks[this.currentTrack].name);
+          this.saveProgress();
+        })
+        .catch(e => {
+          // 忽略中止错误
+          if (e.name === 'AbortError' || e.message?.includes('abort')) {
+            console.log('Music play aborted (normal when switching tracks)');
+          } else {
+            console.warn('Music play failed:', e.message || e);
+          }
+          // 只有在不是用户主动切换的情况下才重置状态
+          if (this.isPlaying) {
+            this.isPlaying = false;
+          }
+        });
+    }
   }
 
   static pause() {
@@ -133,107 +172,84 @@ class MusicManager {
     if (!this.isPlaying) return;
 
     this.currentTrack = (this.currentTrack + 1) % this.tracks.length;
-    const trackUrl = this.tracks[this.currentTrack].url;
-    
-    // 暂停当前音频避免冲突
-    this.audio.pause();
-    this.audio.src = trackUrl;
-
-    // 等待可以播放后再播放
-    const onCanPlay = () => {
-      this.audio.removeEventListener('canplay', onCanPlay);
-      if (!this.isPlaying) return;
-      
-      this.audio.play()
-        .then(() => {
-          console.log('Music playing:', this.tracks[this.currentTrack].name);
-          this.saveProgress();
-        })
-        .catch(e => {
-          if (e.name !== 'AbortError') {
-            console.warn('Music play failed:', e.message || e);
-          }
-        });
-    };
-    
-    this.audio.addEventListener('canplay', onCanPlay);
-    
-    // 超时处理
-    setTimeout(() => {
-      this.audio.removeEventListener('canplay', onCanPlay);
-    }, 1000);
+    this.play(this.currentTrack, this.playAllMode);
   }
 
-  static setVolume(vol) {
-    this.volume = Math.max(0, Math.min(1, vol));
-    if (this.audio) this.audio.volume = this.volume;
-    this.saveProgress();
+  static prevTrack() {
+    if (!this.isPlaying) return;
+
+    this.currentTrack = (this.currentTrack - 1 + this.tracks.length) % this.tracks.length;
+    this.play(this.currentTrack, this.playAllMode);
   }
 
-  static selectTrack(index) {
-    if (index < 0 || index >= this.tracks.length) return;
-    if (!this.audio) this.init();
-
-    this.currentTrack = index;
-    const trackUrl = this.tracks[index].url;
-    this.isReady = false;
-
-    if (this.isPlaying) {
-      // 暂停当前音频避免冲突
-      this.audio.pause();
-      this.audio.src = trackUrl;
-      
-      // 等待可以播放后再播放
-      const onCanPlay = () => {
-        this.audio.removeEventListener('canplay', onCanPlay);
-        if (!this.isPlaying) return;
-        
-        this.audio.play()
-          .then(() => {
-            console.log('Music playing:', this.tracks[index].name);
-            this.saveProgress();
-          })
-          .catch(e => {
-            if (e.name !== 'AbortError') {
-              console.warn('Music play failed:', e.message || e);
-            }
-          });
-      };
-      
-      this.audio.addEventListener('canplay', onCanPlay);
-      
-      // 超时处理
-      setTimeout(() => {
-        this.audio.removeEventListener('canplay', onCanPlay);
-      }, 1000);
-    } else {
-      this.audio.src = trackUrl;
+  static setVolume(value) {
+    this.volume = Math.max(0, Math.min(1, value));
+    if (this.audio) {
+      this.audio.volume = this.volume;
     }
-
     this.saveProgress();
+  }
+
+  static getVolume() {
+    return this.volume;
   }
 
   static saveProgress() {
     try {
-      localStorage.setItem('music-state', JSON.stringify({
-        currentTrack: this.currentTrack,
-        volume: this.volume
-      }));
-    } catch (e) {}
+      const progress = ProgressManager.load();
+      progress.settings = progress.settings || {};
+      progress.settings.currentTrack = this.currentTrack;
+      progress.settings.volume = this.volume;
+      progress.settings.isPlaying = this.isPlaying;
+      ProgressManager.save(progress);
+    } catch (e) {
+      console.warn('Failed to save music progress:', e);
+    }
   }
 
   static loadProgress() {
     try {
-      const saved = localStorage.getItem('music-state');
-      if (saved) {
-        const state = JSON.parse(saved);
-        this.currentTrack = state.currentTrack || 0;
-        this.volume = state.volume !== undefined ? state.volume : 0.5;
+      const progress = ProgressManager.load();
+      if (progress.settings) {
+        this.currentTrack = progress.settings.currentTrack || 0;
+        this.volume = progress.settings.volume || 0.5;
+        if (this.audio) {
+          this.audio.volume = this.volume;
+        }
       }
-    } catch (e) {}
+    } catch (e) {
+      console.warn('Failed to load music progress:', e);
+    }
   }
 
-  static getCurrentTrackName() {
-    return this.tracks[this.currentTrack]?.name || 'Unknown';
+  // 清理资源
+  static dispose() {
+    this.pause();
+
+    // 移除事件监听器
+    if (this.audio) {
+      this.audio.removeEventListener('error', this._boundErrorHandler);
+      this.audio.removeEventListener('ended', this._boundEndedHandler);
+      this.audio.removeEventListener('canplaythrough', this._boundCanPlayHandler);
+      this.audio.src = '';
+      this.audio = null;
+    }
+
+    // 清理缓存
+    this.audioCache.forEach(audio => {
+      audio.pause();
+      audio.src = '';
+    });
+    this.audioCache.clear();
+
+    this.isPlaying = false;
+    this.isReady = false;
+    
+    console.log('[MusicManager] Disposed');
   }
 }
+
+// 页面卸载时清理
+window.addEventListener('beforeunload', () => {
+  MusicManager.dispose();
+});

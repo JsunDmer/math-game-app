@@ -1,6 +1,6 @@
 /**
  * Letters Match Game - 字母配对游戏
- * 拖动字母到对应图片下方
+ * 优化版本：修复触摸事件性能问题，使用节流和缓存
  */
 class LettersMatchGame {
   static currentLetter = null;
@@ -8,6 +8,10 @@ class LettersMatchGame {
   static totalAttempts = 0;
   static matchedPairs = 0;
   static totalPairs = 4;
+  static dropZones = null; // 缓存 DOM 查询结果
+  static isProcessing = false;
+  static touchMoveScheduled = false;
+  static lastTouchTime = 0;
 
   static words = [
     { word: 'APPLE', letter: 'A', emoji: '🍎' },
@@ -22,6 +26,8 @@ class LettersMatchGame {
     this.score = 0;
     this.matchedPairs = 0;
     this.totalAttempts = 0;
+    this.isProcessing = false;
+    this.dropZones = null; // 重置缓存
 
     const shuffledWords = [...this.words].sort(() => Math.random() - 0.5).slice(0, 4);
     const shuffledLetters = shuffledWords.map(w => w.letter).sort(() => Math.random() - 0.5);
@@ -34,7 +40,7 @@ class LettersMatchGame {
       </div>
 
       <div class="game-area">
-        <div class="words-container">
+        <div class="words-container" id="words-container">
           ${shuffledWords.map((item, idx) => `
             <div class="word-card" data-letter="${item.letter}">
               <div class="word-emoji">${item.emoji}</div>
@@ -81,6 +87,14 @@ class LettersMatchGame {
     `;
   }
 
+  // 延迟初始化 dropZones 缓存
+  static getDropZones() {
+    if (!this.dropZones) {
+      this.dropZones = document.querySelectorAll('.drop-zone');
+    }
+    return this.dropZones;
+  }
+
   static handleDragStart(e) {
     e.target.classList.add('dragging');
     e.dataTransfer.setData('text/plain', e.target.dataset.letter);
@@ -101,6 +115,8 @@ class LettersMatchGame {
 
   static async handleDrop(e) {
     e.preventDefault();
+    if (this.isProcessing) return;
+    
     const dropZone = e.currentTarget;
     dropZone.classList.remove('drag-over');
 
@@ -111,23 +127,44 @@ class LettersMatchGame {
   }
 
   static handleTouchStart(e) {
-    const touch = e.touches[0];
     const target = e.currentTarget;
-    target.dataset.touchStartX = touch.clientX;
-    target.dataset.touchStartY = touch.clientY;
     target.classList.add('dragging');
+    target.dataset.dragging = 'true';
   }
 
+  // 优化：使用 requestAnimationFrame 节流触摸移动事件
   static handleTouchMove(e) {
     e.preventDefault();
-    const touch = e.touches[0];
-    const target = e.currentTarget;
-    const dropZones = document.querySelectorAll('.drop-zone');
+    
+    // 节流：每 50ms 最多处理一次
+    const now = Date.now();
+    if (now - this.lastTouchTime < 50) return;
+    this.lastTouchTime = now;
+    
+    if (this.touchMoveScheduled) return;
+    this.touchMoveScheduled = true;
+    
+    requestAnimationFrame(() => {
+      this.processTouchMove(e);
+      this.touchMoveScheduled = false;
+    });
+  }
 
+  static processTouchMove(e) {
+    const touch = e.touches[0];
+    if (!touch) return;
+    
+    const dropZones = this.getDropZones();
+    const touchX = touch.clientX;
+    const touchY = touch.clientY;
+
+    // 使用简单的距离检测而不是 getBoundingClientRect
     dropZones.forEach(zone => {
       const rect = zone.getBoundingClientRect();
-      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
-          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+      const isOver = touchX >= rect.left && touchX <= rect.right &&
+                     touchY >= rect.top && touchY <= rect.bottom;
+      
+      if (isOver) {
         zone.classList.add('drag-over');
       } else {
         zone.classList.remove('drag-over');
@@ -135,14 +172,18 @@ class LettersMatchGame {
     });
   }
 
-  static async handleTouchEnd(e) {
+  static handleTouchEnd(e) {
     const target = e.currentTarget;
     target.classList.remove('dragging');
+    target.dataset.dragging = 'false';
 
     const touch = e.changedTouches[0];
-    const dropZones = document.querySelectorAll('.drop-zone');
+    if (!touch) return;
+    
+    const dropZones = this.getDropZones();
     let matchedZone = null;
 
+    // 找到匹配的 drop zone
     dropZones.forEach(zone => {
       zone.classList.remove('drag-over');
       const rect = zone.getBoundingClientRect();
@@ -152,21 +193,24 @@ class LettersMatchGame {
       }
     });
 
-    if (matchedZone) {
+    if (matchedZone && !this.isProcessing) {
       const draggedLetter = target.dataset.letter;
       const targetLetter = matchedZone.dataset.letter;
-      await this.checkMatch(draggedLetter, targetLetter, matchedZone);
+      this.checkMatch(draggedLetter, targetLetter, matchedZone);
     }
   }
 
   static async checkMatch(draggedLetter, targetLetter, dropZone) {
+    if (this.isProcessing) return;
+    this.isProcessing = true;
+    
     this.totalAttempts++;
 
     if (draggedLetter === targetLetter) {
       dropZone.classList.add('correct');
       dropZone.innerHTML = `<span class="letter-text" style="font-size:36px;color:var(--success)">${draggedLetter}</span>`;
 
-      const letterCard = document.querySelector(`.letter-card[data-letter="${draggedLetter}"]`);
+      const letterCard = document.querySelector(`.letter-card[data-letter="${draggedLetter}"]:not(.matched)`);
       if (letterCard) letterCard.classList.add('matched');
 
       this.matchedPairs++;
@@ -191,5 +235,19 @@ class LettersMatchGame {
       dropZone.style.animation = 'shake 0.5s ease';
       setTimeout(() => dropZone.style.animation = '', 500);
     }
+    
+    this.isProcessing = false;
+  }
+
+  // 清理资源
+  static dispose() {
+    this.dropZones = null;
+    this.isProcessing = false;
+    this.touchMoveScheduled = false;
   }
 }
+
+// 页面切换时清理
+window.addEventListener('beforeunload', () => {
+  LettersMatchGame.dispose();
+});

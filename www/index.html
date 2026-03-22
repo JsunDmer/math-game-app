@@ -298,6 +298,7 @@
   <script src="js/core/letter-audio-manager.js"></script>
   <script src="js/core/audio-manager.js"></script>
   <script src="js/core/music-manager.js"></script>
+  <script src="js/core/performance-monitor.js"></script>
   <script src="js/games/english/letters-match.js"></script>
   <script src="js/games/english/word-select.js"></script>
   <script src="js/games/english/listen-identify.js"></script>
@@ -309,5 +310,54 @@
   <script src="js/games/math/number-sort.js"></script>
   <script src="js/games/math/addition.js"></script>
   <script src="js/app.js"></script>
+  
+  <!-- 性能监控启动（开发/测试环境） -->
+  <script>
+    // 在URL中添加 ?perf=1 启用性能监控
+    if (window.location.search.includes('perf=1')) {
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('[App] Performance monitoring enabled');
+        PerformanceMonitor.start();
+        
+        // 显示性能面板
+        const perfPanel = document.createElement('div');
+        perfPanel.id = 'perf-panel';
+        perfPanel.style.cssText = `
+          position: fixed;
+          top: 10px;
+          right: 10px;
+          background: rgba(0,0,0,0.8);
+          color: #0f0;
+          padding: 10px;
+          border-radius: 8px;
+          font-family: monospace;
+          font-size: 12px;
+          z-index: 9999;
+          max-width: 250px;
+        `;
+        document.body.appendChild(perfPanel);
+        
+        // 更新性能面板
+        setInterval(() => {
+          const summary = PerformanceMonitor.getSummary();
+          perfPanel.innerHTML = `
+            <div style="font-weight:bold;margin-bottom:5px;">⚡ Performance</div>
+            <div>FPS: ${summary.fps.current} (avg: ${summary.fps.avg})</div>
+            <div>Memory: ${(summary.memory.current / 1024 / 1024).toFixed(1)}MB</div>
+            <div>Growth: ${(summary.memory.growth / 1024 / 1024).toFixed(1)}MB</div>
+            <div>Long Tasks: ${summary.longTasks.count}</div>
+            <div>Errors: ${summary.errors.count}</div>
+            <div style="margin-top:5px;font-size:10px;color:#888;">
+              Click to export report
+            </div>
+          `;
+        }, 1000);
+        
+        perfPanel.addEventListener('click', () => {
+          PerformanceMonitor.exportReport();
+        });
+      });
+    }
+  </script>
 </body>
 </html>
